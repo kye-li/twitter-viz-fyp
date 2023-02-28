@@ -124,7 +124,7 @@ function App() {
 
     const createWordCloud = () => {
         setWordCloud(ngrokURL + 'word-cloud?keyword=' + `${searchInput}`);
-        alert('WordCloud is now loading, it will take up to 45 seconds.');
+        alert('WordCloud will start loading after OK has been pressed. It may take up to 30 seconds.');
     }
 
     // const updateWordCloud = async ({keyword}) => {
