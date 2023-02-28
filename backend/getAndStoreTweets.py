@@ -32,7 +32,7 @@ positive_list = []
 negative_list = []
 neutral_list = []
 
-
+# ref: https://www.geeksforgeeks.org/python-sentiment-analysis-using-vader/
 # do sentiment analysis using vader
 def sentiment_scores(sentence):
     global negative_score, positive_score, neutral_score, compound_score
@@ -79,6 +79,7 @@ def get_and_score_tweets(keyword):
     # append cleaned tweet to cleaned_tweets array and loop through it below
     for tweet in new_tweets:
         tweet_list.append(tweet.text)
+
         # append tweet.text to new array
         # run array through clean_tweets function
         # clean_tweets function returns an array of cleaned tweets
@@ -122,6 +123,7 @@ def get_and_score_tweets(keyword):
     totalNegative = negative
     totalNeutral = neutral
 
+    # print(tweet_list)
     return {"data": data}
     # totalTweets = positive + negative + neutral
     # positivePer = round(100 * (positive / totalTweets), 2)
@@ -155,7 +157,7 @@ def remove_rt():
 # function to remove url links and '@' from mentions
 def remove_mentions():
     return lambda x: re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", x)
-
+# comment source
 
 def word_cloud_input(tw_list):
     tw_list = pd.DataFrame(tw_list)
@@ -164,7 +166,7 @@ def word_cloud_input(tw_list):
     tw_list["text"] = tw_list.text.str.lower()
     return tw_list["text"]
 
-
+# source: https://towardsdatascience.com/step-by-step-twitter-sentiment-analysis-in-python-d6f650ade58d
 def create_wordcloud(text):
     mask = np.array(Image.open("../wcBG.png"))
     stopwords = set(STOPWORDS)
@@ -186,6 +188,8 @@ def get_wordcloud(keyword):
     x = word_cloud_input(cleaned_list)
     create_wordcloud(x.values)
 
+
+# get_and_score_tweets('scotland')
 # y = word_cloud_input(positive_list)
 # z = word_cloud_input(neutral_list)
 # a = word_cloud_input(negative_list)
