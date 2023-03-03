@@ -9,6 +9,7 @@ import os
 import csv
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from googletrans import Translator
+import pandas as pd
 
 analyser = SentimentIntensityAnalyzer()
 translator = Translator()
@@ -119,6 +120,22 @@ def analyse_text(tweet):
     return sentiment_score_dict
 
 
+# https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.value_counts.html
+def get_counts_before_trans(file):
+    df1 = pd.read_csv(file)
+    total = len(df1["text"])
+    print('Tweet counts before translation:')
+    print(df1['overall_sentiment'].value_counts(), 'total tweets:', total)
+    print('')
+
+
+def get_counts_after_trans(file):
+    df2 = pd.read_csv(file)
+    total = len(df2["text"])
+    print('Tweet counts after translation:')
+    print(df2['overall_sentiment'].value_counts(), 'total tweets:', total)
+
+
 # def google_translate(t_list):
 #     global translated, trans_origin
 #     translations = translator.translate(t_list)
@@ -129,6 +146,7 @@ def analyse_text(tweet):
 #     print(len(translated), len(trans_origin))
 # analyse_text(r"I feel very good today, but I am not sad at the same time.")
 
-update_tweets_with_sentiment('tweets.csv')
+# update_tweets_with_sentiment('tweets.csv')
 
-
+get_counts_before_trans('scored_tweets_before_trans.csv')
+get_counts_after_trans('scored_tweets_after_trans.csv')
