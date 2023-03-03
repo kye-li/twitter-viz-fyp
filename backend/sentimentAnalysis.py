@@ -17,14 +17,15 @@ positive_list = []
 negative_list = []
 neutral_list = []
 
-tweet_list = []
-translated = []
-trans_origin = []
+# tweet_list = []
+# translated = []
+# trans_origin = []
+translations_list = []
 
 
 # using DictReader: https://docs.python.org/3/library/csv.html#module-contents
 def update_tweets_with_sentiment(file):
-    global positive_list, negative_list, neutral_list, tweet_list
+    global positive_list, negative_list, neutral_list, translations_list
 
     if os.path.exists(file):
         with open(file, newline='', encoding='utf8') as inputFile:
@@ -129,3 +130,5 @@ def analyse_text(tweet):
 # analyse_text(r"I feel very good today, but I am not sad at the same time.")
 
 update_tweets_with_sentiment('tweets.csv')
+
+
