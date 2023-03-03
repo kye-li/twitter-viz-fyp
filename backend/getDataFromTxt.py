@@ -1,9 +1,11 @@
 # ref: https://www.w3schools.com/python
 # ref: https://docs.python.org/3/library/os.html
+# ref: https://docs.python.org/3/library/csv.html
 
 import json
 import csv
 import os
+import pandas as pd
 
 # write method to loop through all text files (done)
 # append to csv (done)
@@ -12,6 +14,7 @@ import os
 
 directory1 = r"C:\Users\kye\Documents\Twitter FYP\election day tweets"
 directory2 = r"C:\Users\kye\Documents\Twitter FYP\post election tweets"
+directory3 = r"C:\Users\kye\Documents\Twitter FYP\extra pre-election tweets"
 
 
 def write_to_csv(data):
@@ -45,25 +48,37 @@ def read_files(directory):
     # write to csv
 
     for file in os.listdir(directory):
-        if file.endswith('.txt'):
-            # https://www.w3schools.com/python/ref_string_format.asp
-            filepath = r"{directory}\{file}".format(directory=directory, file=file)
-            print(filepath)
-            f = open(filepath, "r", encoding="utf8")
-            response = f.read()
-            js = json.loads(response)
-            data = js["data"]
-            write_to_csv(data)
-            print("File read to csv successfully.")
-            f.close()
-        else:
-            print(OSError)
+        # https://www.w3schools.com/python/ref_string_format.asp
+        filepath = r"{directory}\{file}".format(directory=directory, file=file)
+        print(filepath)
+        f = open(filepath, "r", encoding="utf8")
+        response = f.read()
+        js = json.loads(response)
+        data = js["data"]
+        write_to_csv(data)
+        print("File read to csv successfully.")
+        f.close()
+
 
 # insert all tweets from txt files into 'tweets.csv' (done)
 # read_files(directory1)
 # print('election tweets done')
 # read_files(directory2)
 # print('post election tweets done')
+# read_files(directory3)
+# print('extra pre election tweets done')
+
 
 # method to remove duplicates
-# (removed it manually on Excel) (48664 tweets were duplicates and were removed, only 11711 left)
+# use pandas, put into dataframe, use drop_duplicates method, and then insert it back to csv
+
+def remove_duplicates():
+    tweet_dataframe = pd.read_csv('tweets.csv')
+    #print(tweet_dataframe)
+    tweet_dataframe.drop_duplicates(subset='text', keep='first', inplace=True)
+    #print(tweet_dataframe)
+    tweet_dataframe.to_csv('tweets.csv', index=False)
+
+#remove_duplicates()
+# 11865 tweets left
+
