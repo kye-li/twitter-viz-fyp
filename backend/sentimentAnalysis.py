@@ -7,6 +7,8 @@
 # googleTranslate source code: https://py-googletrans.readthedocs.io/en/latest/
 import os
 import csv
+import re
+
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from googletrans import Translator
 import pandas as pd
@@ -14,9 +16,7 @@ import pandas as pd
 analyser = SentimentIntensityAnalyzer()
 translator = Translator()
 
-positive_list = []
-negative_list = []
-neutral_list = []
+positive_list, negative_list, neutral_list = [], [], []
 
 # tweet_list = []
 # translated = []
@@ -30,13 +30,13 @@ def update_tweets_with_sentiment(file):
 
     if os.path.exists(file):
         with open(file, newline='', encoding='utf8') as inputFile:
-            with open('scored_tweets.csv', 'a', newline='', encoding='utf8') as outputFile:
+            with open('data/scored_tweets.csv', 'a', newline='', encoding='utf8') as outputFile:
                 reader = csv.DictReader(inputFile)
                 fieldnames = ['edit_history_tweet_ids', 'geo', 'created_at', 'text', 'neg',
                               'neu', 'pos', 'compound', 'overall_sentiment']
                 writer = csv.DictWriter(outputFile, fieldnames=fieldnames)
 
-                if os.stat('scored_tweets.csv').st_size == 0:
+                if os.stat('data/scored_tweets.csv').st_size == 0:
                     writer.writeheader()
 
                 for tweet in reader:
@@ -136,17 +136,64 @@ def get_counts_after_trans(file):
     print(df2['overall_sentiment'].value_counts(), 'total tweets:', total)
 
 
-# def google_translate(t_list):
-#     global translated, trans_origin
-#     translations = translator.translate(t_list)
-#     for translation in translations:
-#         translated.append(translation.text)
-#         trans_origin.append(translation.origin)
-#
-#     print(len(translated), len(trans_origin))
+# method to remove https links
+def remove_links(text):
+    new_text = re.sub('(https://\S+)', '', text)
+    return new_text
+
+
+# run tweet through google translate
+# new dataframe, then read new dataframe to a new csv file
+
+def add_translations_to_data(file):
+    links_only = []
+    if os.path.exists(file):
+        with open(file, newline='', encoding='utf8') as inputFile:
+            with open('data/tweets_with_translations.csv', 'a', newline='', encoding='utf8') as outputFile:
+                reader = csv.DictReader(inputFile)
+                fieldnames = ['edit_history_tweet_ids', 'geo', 'created_at', 'text', 'neg',
+                              'neu', 'pos', 'compound', 'overall_sentiment', 'translation']
+                writer = csv.DictWriter(outputFile, fieldnames=fieldnames)
+
+                if os.stat('data/tweets_with_translations.csv').st_size == 0:
+                    writer.writeheader()
+
+                for tweet in reader:
+                    edit_history_tweet_ids = tweet['edit_history_tweet_ids']
+                    geo = tweet['geo']
+                    created_at = tweet['created_at']
+                    neg = tweet['neg']
+                    neu = tweet['neu']
+                    pos = tweet['pos']
+                    compound = tweet['compound']
+                    overall_sentiment = tweet['overall_sentiment']
+                    text = tweet['text']
+
+                    translated_text = translator.translate(text).text
+
+                    new_dict = dict(edit_history_tweet_ids=edit_history_tweet_ids,
+                                    geo=geo,
+                                    created_at=created_at,
+                                    text=text,
+                                    neg=neg,
+                                    neu=neu,
+                                    pos=pos,
+                                    compound=compound,
+                                    overall_sentiment=overall_sentiment,
+                                    translation=translated_text
+                                    )
+                    writer.writerow(new_dict)
+                    print(edit_history_tweet_ids)
+                    print('row written successfully')
+    else:
+        print('File does not exist')
+
+
 # analyse_text(r"I feel very good today, but I am not sad at the same time.")
 
 # update_tweets_with_sentiment('tweets.csv')
 
-get_counts_before_trans('scored_tweets_before_trans.csv')
-get_counts_after_trans('scored_tweets_after_trans.csv')
+# get_counts_before_trans('data/scored_tweets_before_trans.csv')
+# get_counts_after_trans('data/scored_tweets.csv')
+
+add_translations_to_data('data/tweets_without_links.csv')

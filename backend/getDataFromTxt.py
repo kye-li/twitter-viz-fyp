@@ -20,13 +20,13 @@ directory3 = r"C:\Users\kye\Documents\Twitter FYP\extra pre-election tweets"
 def write_to_csv(data):
     # use 'a' to continue appending rows to original file, 'w' will clear file
     # check first if file is empty, if it is, write header
-    with open('tweets.csv', 'a', newline='', encoding='utf8') as csvfile:
+    with open('data/tweets.csv', 'a', newline='', encoding='utf8') as csvfile:
         fieldnames = ['edit_history_tweet_ids', 'geo', 'created_at', 'text', 'id']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames, extrasaction='ignore')
 
         # check if file is empty, write header
         # reference: https://thispointer.com/python-three-ways-to-check-if-a-file-is-empty/
-        if os.stat('tweets.csv').st_size == 0:
+        if os.stat('data/tweets.csv').st_size == 0:
             writer.writeheader()
             print('file is empty')
         for tweet in data:
@@ -73,7 +73,7 @@ def read_files(directory):
 # use pandas, put into dataframe, use drop_duplicates method, and then insert it back to csv
 
 def remove_duplicates():
-    tweet_dataframe = pd.read_csv('tweets.csv')
+    tweet_dataframe = pd.read_csv('data/tweets.csv')
     #print(tweet_dataframe)
     tweet_dataframe.drop_duplicates(subset='text', keep='first', inplace=True)
     #print(tweet_dataframe)

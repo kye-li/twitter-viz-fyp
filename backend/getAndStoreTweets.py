@@ -154,7 +154,7 @@ def remove_rt():
     return lambda x: re.sub('RT @\w+: ', " ", x)
 
 
-# function to remove url links and '@' from mentions
+# function to remove url links, mentions and all special char (everything except digits and alphabets)
 def remove_mentions():
     return lambda x: re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", x)
 # comment source
