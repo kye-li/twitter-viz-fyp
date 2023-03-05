@@ -89,42 +89,73 @@ function App() {
 
         return (
             <ChakraProvider>
-                <Text fontWeight="bold" textAlign="center" marginTop="20px">
-                    Twitter Open Data Analyses and Visualisations 😊
-                </Text>
-                <SimpleGrid columns={2} spacing={2}>
-                    <Container bg='lightgreen' height='50vh' width='100%'><Text>Hello</Text></Container>
-                    <Container className='tweetsDisplay' bg='lightgreen' height='50vh' width='50vw'>
-                        <Button onClick={() => getTweetsWithSentiment({sentiment: 'positive'})}>Show Positive Tweets</Button>
-                        <Button onClick={() => getTweetsWithSentiment({sentiment: 'negative'})}>Show Negative Tweets</Button>
-                        <Button onClick={() => getTweetsWithSentiment({sentiment: 'neutral'})}>Show Neutral Tweets</Button>
-                        <Button onClick={() => getTweetsWithSentiment({sentiment: 'all'})}>Show All Tweets</Button>
-                        <TweetDisplay tweetDisplayProp={sentimentTweets} />
-                    </Container>
+                <Container minH="100vh" minW="100vw" overflow="hidden">
+                    <Text fontWeight="bold" textAlign="center" h="5vh">
+                        Twitter Open Data Analyses and Visualisations 😊
+                    </Text>
+                    <SimpleGrid columns={2} spacing={"1vh"} h="95vh">
+                        <Container bg="lightgreen" h="47vh" minW="100%">
+                            <Text>Hello</Text>
+                        </Container>
+                        <Container
+                            className="tweetsDisplay"
+                            bg="lightgreen"
+                            h="47vh"
+                            minW="100%"
+                        >
+                            <Button
+                                onClick={() => getTweetsWithSentiment({sentiment: 'positive'})}
+                            >
+                                Show Positive Tweets
+                            </Button>
+                            <Button
+                                onClick={() => getTweetsWithSentiment({sentiment: 'negative'})}
+                            >
+                                Show Negative Tweets
+                            </Button>
+                            <Button
+                                onClick={() => getTweetsWithSentiment({sentiment: 'neutral'})}
+                            >
+                                Show Neutral Tweets
+                            </Button>
+                            <Button
+                                onClick={() => getTweetsWithSentiment({sentiment: 'all'})}
+                            >
+                                Show All Tweets
+                            </Button>
+                            <TweetDisplay tweetDisplayProp={sentimentTweets} />
+                        </Container>
 
-                    {/*<div className='rowA'>*/}
-                {/*    <div className='searchBar'>*/}
-                {/*    <form onSubmit={enterSearch}>*/}
-                {/*        <label>Enter your search word here: </label>*/}
-                {/*        <input*/}
-                {/*            type="text"*/}
-                {/*            value={searchInput}*/}
-                {/*            onChange={(e) => setSearchInput(e.target.value)}*/}
-                {/*        />*/}
-                {/*        <input type="submit" name="search"/>*/}
-                {/*    </form>*/}
-                {/*    </div>*/}
-                {/*</div>*/}
-                {/*<div className='rowB'>*/}
-                {/*    <Button onClick={() => createWordCloud()} >Load WordCloud</Button>*/}
-                {/*    <Image src={wordCloud} />*/}
-                {/*</div>*/}
-                    <Container bg='lightgreen' height='50vh' width='100%'>
-                        <PieChart pieChartProp={pieChartData}  />
-                        <Button onClick={() => updatePieChart()} >Update Pie Chart</Button>
-                    </Container>
-                    <Container bg='lightgreen' height='50vh' width='50vw'><Text>Hello4</Text></Container>
-                </SimpleGrid>
+                        {/*<div className='rowA'>*/}
+                    {/*    <div className='searchBar'>*/}
+                    {/*    <form onSubmit={enterSearch}>*/}
+                    {/*        <label>Enter your search word here: </label>*/}
+                    {/*        <input*/}
+                    {/*            type="text"*/}
+                    {/*            value={searchInput}*/}
+                    {/*            onChange={(e) => setSearchInput(e.target.value)}*/}
+                    {/*        />*/}
+                    {/*        <input type="submit" name="search"/>*/}
+                    {/*    </form>*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
+                    {/*<div className='rowB'>*/}
+                    {/*    <Button onClick={() => createWordCloud()} >Load WordCloud</Button>*/}
+                    {/*    <Image src={wordCloud} />*/}
+                    {/*</div>*/}
+                        <Container bg="lightgreen" h="47vh" minW="100%">
+                            <PieChart pieChartProp={pieChartData}  />
+                            <Button
+                                onClick={() => updatePieChart()}
+                            >
+                                Update Pie Chart
+                            </Button>
+                        </Container>
+                        <Container bg="lightgreen" h="47vh" minW="100%">
+                            <Text>Hello4</Text>
+                        </Container>
+                    </SimpleGrid>
+                </Container>
             </ChakraProvider>
            );
 }
