@@ -1,10 +1,29 @@
-import json
 import os
 import csv
 import re
 
+import nltk
+from nltk.tokenize import word_tokenize
+# from nltk.stem import PorterStemmer
+from nltk.stem import WordNetLemmatizer
+from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+from nltk.corpus import stopwords
+from collections import Counter
+
+nltk.download('punkt')
+nltk.download("wordnet")
+nltk.download("omw-1.4")
+
+# ps = PorterStemmer()
+
+wnl = WordNetLemmatizer()
+factory = StemmerFactory()
+stemmer = factory.create_stemmer()
+
 pos_list, neg_list, neu_list = [], [], []
 pos_count, neg_count, neu_count = 0, 0, 0
+
+most_occur = []
 
 
 # write methods to be called in appRoutes.py
@@ -48,7 +67,8 @@ def get_full_tweet_json(file):
             neu_count = len(neu_list)
             neg_count = len(neg_list)
 
-        print(pos_count, neu_count, neg_count)
+        # print(pos_count, neu_count, neg_count)
+        # print(len(data))
         return {"data": data}
     else:
         print('File does not exist')
@@ -91,3 +111,101 @@ def show_tweets(sentiment):
     return tweet_display
 
 
+# ref: https://www.geeksforgeeks.org/find-k-frequent-words-data-set-python/
+# ref: https://www.geeksforgeeks.org/removing-stop-words-nltk-python/
+# method to return words by its frequency after removing RT@, mentions, and all other special characters
+# can be used for word cloud
+
+# concatenate to one long string
+# remove RT@, mentions, punctuation, other special chars
+# tokenize string with
+# from nltk.tokenize import word_tokenize
+# word_tokenize(text)
+# if not in stopwords, append to list
+# pass list into Counter
+# run most-common function
+def show_word_frequency(file):
+    global most_occur
+    initial_list = []
+    final_list = []
+    data = get_full_tweet_json(file)
+    data1 = data["data"]
+    # get full list of tweets
+
+    for tweet in data1:
+        tweet_text = tweet["text"]
+        # for each tweet, clean tweet
+        lemmatized_words = clean_text(tweet_text)
+        # lemmatized_words is a list of words from the tweet
+        eng_stopwords = stopwords.words('english')
+        ind_stopwords = stopwords.words('indonesian')
+        for word in lemmatized_words:
+            initial_list.append(word)
+            # a list to check how many words initially without excluding stopwords
+            if word not in eng_stopwords and word not in ind_stopwords and not word.isnumeric():
+                final_list.append(word)
+                # a list to check how many words after excluding stopwords and numbers
+                # in both eng and indonesian (similar to malay)
+
+    print(initial_list)
+    print(len(initial_list))
+    # print(final_list)
+    print(len(final_list))
+    counter = Counter(final_list)
+    most_occur = counter.most_common(100)
+
+    print(most_occur)
+
+    return most_occur
+
+
+def clean_text(text):
+    list_of_words_per_tweet = []
+    # remove RT @abcde1234:
+    cleaned_text = re.sub("RT @\w+: ", "", text)
+    # remove @abcde1234
+    cleaned_text1 = re.sub("@\w+ ", "", cleaned_text)
+    # remove all special characters (everything except alphabets and digits)
+    cleaned_text2 = re.sub("[^a-zA-Z0-9]", " ", cleaned_text1)
+    # tokenize string after making them all lowercase
+    cleaned_text3 = word_tokenize(str.lower(cleaned_text2))
+    # stemming words ref: https://www.geeksforgeeks.org/python-stemming-words-with-nltk/
+    # lemmatiztion ref: https://www.datacamp.com/tutorial/stemming-lemmatization-python
+    # https://www.nltk.org/_modules/nltk/stem/wordnet.html
+    for word in cleaned_text3:
+        # english lemmatization
+        # "v" as verbs - return lemma of all verbs
+        # lemmatized_word = wnl.lemmatize(word, "v")
+        # indonesian (similar to malay) stemming and lemmatization
+        # https://pypi.org/project/PySastrawi/
+        # ref: https://malaya.readthedocs.io/en/latest/load-stemmer.html
+        # print(word, " : ", stemmer.stem(word))
+        lemmatized_word = stemmer.stem(word)
+        list_of_words_per_tweet.append(lemmatized_word)
+
+    # print(list_of_words_per_tweet)
+    return list_of_words_per_tweet
+
+
+def show_tweets_by_keyword(keyword):
+    # make keyword lower case
+    # for each tweet
+    # lower case text
+    # find match for tweet text
+    # if yes, append to list
+    # return {"data": list}
+    return []
+
+
+def show_total_tweet_counts(sentiment):
+    tweet_count = []
+    data = show_tweets(sentiment)
+    data1 = data["data"]
+    for tweet in data1:
+        tweet_count.append(tweet)
+
+    return len(tweet_count)
+
+
+show_word_frequency('data/tweets_with_translations.csv')
+# clean_text('Hi my name is Bella')
