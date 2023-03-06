@@ -6,7 +6,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 
 const PieChart = ({ pieChartProp }) => {
-    console.log(pieChartProp);
+    // console.log(pieChartProp);
     ChartJS.register(ArcElement, Tooltip, Legend);
 
     const pie_data = {

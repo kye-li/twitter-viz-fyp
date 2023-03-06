@@ -20,7 +20,11 @@ wnl = WordNetLemmatizer()
 factory = StemmerFactory()
 stemmer = factory.create_stemmer()
 
-pos_list, neg_list, neu_list = [], [], []
+a_pos_list, a_neg_list, a_neu_list = [], [], []
+k_pos_list, k_neg_list, k_neu_list = [], [], []
+s_pos_list, s_neg_list, s_neu_list = [], [], []
+wc_pos_list, wc_neg_list, wc_neu_list = [], [], []
+
 pos_count, neg_count, neu_count = 0, 0, 0
 
 most_occur = []
@@ -31,13 +35,13 @@ most_occur = []
 # method for piechart
 # get total number of respective sentiment tweets (pos, neu, neg)
 
+# equivalent to showing all tweets in the database where file = 'data/tweets_with_translations.csv'
+def show_all_tweets(file='data/tweets_with_translations.csv'):
+    global a_pos_list, a_neu_list, a_neg_list
 
-def get_full_tweet_json(file):
-    global pos_list, neu_list, neg_list, pos_count, neu_count, neg_count
-
-    pos_list.clear()
-    neu_list.clear()
-    neg_list.clear()
+    a_pos_list.clear()
+    a_neu_list.clear()
+    a_neg_list.clear()
     data = []
     if os.path.exists(file):
         with open(file, newline='', encoding='utf8') as inputFile:
@@ -55,23 +59,61 @@ def get_full_tweet_json(file):
                 overall_sentiment = tweet['overall_sentiment']
 
                 if overall_sentiment == "positive":
-                    pos_list.append(tweet)
+                    a_pos_list.append(tweet)
                 elif overall_sentiment == "negative":
-                    neg_list.append(tweet)
+                    a_neg_list.append(tweet)
                 elif overall_sentiment == "neutral":
-                    neu_list.append(tweet)
+                    a_neu_list.append(tweet)
 
                 data.append(tweet)
-
-            pos_count = len(pos_list)
-            neu_count = len(neu_list)
-            neg_count = len(neg_list)
 
         # print(pos_count, neu_count, neg_count)
         # print(len(data))
         return {"data": data}
     else:
-        print('File does not exist')
+        return "File does not exist, please ensure file name/location is correct."
+
+
+# make keyword lower case
+# for each tweet
+# lower case text
+# find match for tweet text
+# if yes, append to list
+# return {"data": list}
+# ref: https://www.w3schools.com/python/python_regex.asp#findall
+def show_tweets_by_keyword(keyword):
+    global k_pos_list, k_neu_list, k_neg_list
+    tweet_list = []
+    k_pos_list.clear()
+    k_neu_list.clear()
+    k_neg_list.clear()
+    keyword = str.lower(keyword)
+    data = show_all_tweets()
+    data1 = data["data"]
+
+    for tweet in data1:
+        text = str.lower(tweet["text"])
+        x = re.findall(keyword, text)
+        # if x is not an empty list, meaning there's a match, append tweet to tweet_list
+        if x:
+            tweet_list.append(tweet)
+    if tweet_list:
+        response = {"data": tweet_list}
+
+        for tweet in tweet_list:
+            overall_sentiment = tweet['overall_sentiment']
+
+            if overall_sentiment == "positive":
+                k_pos_list.append(tweet)
+            elif overall_sentiment == "negative":
+                k_neg_list.append(tweet)
+            elif overall_sentiment == "neutral":
+                k_neu_list.append(tweet)
+    else:
+        response = 'No match, please enter a different keyword.'
+    # print(response)
+    # print(len(response))
+    return response
 
 
 # method to remove brackets and single quotes from string ['1593771032036286465']
@@ -84,29 +126,81 @@ def get_tweet_id(tweet):
     return tweet_id
 
 
-def pie_chart_data(file):
-    get_full_tweet_json(file)
-    pc_data = [pos_count, neu_count, neg_count]
+def pie_chart_data(keyword=''):
+    global pos_count, neu_count, neg_count
+
+    if keyword == '':
+        data = show_all_tweets()  # return list or string
+        pos_list = a_pos_list
+        neu_list = a_neu_list
+        neg_list = a_neg_list
+        # print('default all tweets')
+    else:
+        data = show_tweets_by_keyword(keyword)  # return list or string
+        pos_list = k_pos_list
+        neu_list = k_neu_list
+        neg_list = k_neg_list
+        # print('getting tweets of', keyword)
+
+    if isinstance(data, str):  # check if data is an error message (which is a string)
+        pc_data = [0, 0, 0]
+    else:
+        pos_count = len(pos_list)
+        neu_count = len(neu_list)
+        neg_count = len(neg_list)
+        pc_data = [pos_count, neu_count, neg_count]
+    # print(pc_data)
     return pc_data
 
 
-# methods for tweet display
+# method for tweet display
 # return tweets by sentiment
 
-def show_tweets(sentiment):
-    data = get_full_tweet_json('data/tweets_with_translations.csv')
+# equivalent to show tweets by sentiment (for button usage)
+def show_tweets_by_sentiment(keyword='', sentiment='all'):
+    global s_pos_list, s_neu_list, s_neg_list
+    s_pos_list.clear()
+    s_neu_list.clear()
+    s_neg_list.clear()
+
+    if keyword == '':
+        # print('sentiment: ', sentiment, 'keyword: ', keyword)
+        data = show_all_tweets()
+        # print('showing all tweets')
+        s_pos_list = a_pos_list
+        s_neu_list = a_neu_list
+        s_neg_list = a_neg_list
+        # print(len(s_pos_list), len(s_neu_list), len(s_neg_list))
+    else:
+        data = show_tweets_by_keyword(keyword)
+        # print('sentiment: ', sentiment, 'keyword: ', keyword)
+        # print('showing ', sentiment, 'tweets of ', keyword)
+        s_pos_list = k_pos_list
+        s_neu_list = k_neu_list
+        s_neg_list = k_neg_list
 
     tweet_display = {}
-    if sentiment == 'positive':
-        tweet_display = {"data": pos_list}
-    if sentiment == 'negative':
-        tweet_display = {"data": neg_list}
-    if sentiment == 'neutral':
-        tweet_display = {"data": neu_list}
-    if sentiment == 'all':
-        tweet_display = data
+
+    if isinstance(data, str):  # check if data is an error message (which is a string)
+        tweet_display = {data}
     else:
-        print('Please enter "all", "positive", "neutral", or "negative".')
+        if sentiment == 'positive':
+            if s_pos_list:
+                tweet_display = {"data": s_pos_list}
+            else:
+                tweet_display = {"No positive tweets found."}
+        elif sentiment == 'negative':
+            if s_neg_list:
+                tweet_display = {"data": s_neg_list}
+            else:
+                tweet_display = {"No negative tweets found."}
+        elif sentiment == 'neutral':
+            if s_neu_list:
+                tweet_display = {"data": s_neu_list}
+            else:
+                tweet_display = {"No neutral tweets found."}
+        elif sentiment == 'all':
+            tweet_display = data
 
     return tweet_display
 
@@ -124,39 +218,82 @@ def show_tweets(sentiment):
 # if not in stopwords, append to list
 # pass list into Counter
 # run most-common function
-def show_word_frequency(file):
-    global most_occur
+
+def show_word_frequency(keyword='', sentiment='all'):
+    global most_occur, wc_pos_list, wc_neu_list, wc_neg_list
     initial_list, final_list, word_cloud_input = [], [], []
-    data = get_full_tweet_json(file)
-    data1 = data["data"]
-    # get full list of tweets
+    data1 = []
+    if keyword == '':
+        data = show_all_tweets()
+        wc_pos_list = a_pos_list
+        wc_neu_list = a_neu_list
+        wc_neg_list = a_neg_list
+        print('showing word frequency for all tweets')
+    else:
+        data = show_tweets_by_keyword(keyword)
+        wc_pos_list = k_pos_list
+        wc_neu_list = k_neu_list
+        wc_neg_list = k_neg_list
+        print('showing word frequency for tweets with keyword: ', keyword)
 
-    for tweet in data1:
-        tweet_text = tweet["text"]
-        # for each tweet, clean tweet
-        lemmatized_words = clean_text(tweet_text)
-        # lemmatized_words is a list of words from the tweet
-        eng_stopwords = stopwords.words('english')
-        ind_stopwords = stopwords.words('indonesian')
-        for word in lemmatized_words:
-            initial_list.append(word)
-            # a list to check how many words initially without excluding stopwords
-            if word not in eng_stopwords and word not in ind_stopwords and not word.isnumeric():
-                final_list.append(word)
-                # a list to check how many words after excluding stopwords and numbers
-                # in both eng and indonesian (similar to malay)
+    if isinstance(data, str):  # check if data is an error message (which is a string)
+        word_cloud_input = []
+    else:
+        # check for sentiment, return respective tweets
+        if sentiment == 'positive':
+            print('pos')
+            if wc_pos_list:
+                data1 = wc_pos_list
+                print(len(data1))
+            else:
+                word_cloud_input = []
+        elif sentiment == 'negative':
+            print('neg')
+            if wc_neg_list:
+                data1 = wc_neg_list
+                print(len(data1))
+            else:
+                word_cloud_input = []
+        elif sentiment == 'neutral':
+            print('neu')
+            if wc_neu_list:
+                data1 = wc_neu_list
+                print(len(data1))
+            else:
+                word_cloud_input = []
+        elif sentiment == 'all':
+            print('all')
+            data1 = data["data"]
+            print(len(data1))
+            # get full list of tweets
 
-    # print(initial_list)
-    # print(len(initial_list))
-    # print(final_list)
-    # print(len(final_list))
-    counter = Counter(final_list)
-    most_occur = counter.most_common(100)
+        for tweet in data1:
+            tweet_text = tweet["text"]
+            # for each tweet, clean tweet
+            lemmatized_words = clean_text(tweet_text)
+            # lemmatized_words is a list of words from the tweet
+            eng_stopwords = stopwords.words('english')
+            ind_stopwords = stopwords.words('indonesian')
+            for word in lemmatized_words:
+                initial_list.append(word)
+                # a list to check how many words initially without excluding stopwords
+                if word not in eng_stopwords and word not in ind_stopwords and not word.isnumeric():
+                    final_list.append(word)
+                    # a list to check how many words after excluding stopwords and numbers
+                    # in both eng and indonesian (similar to malay)
 
-    for i in most_occur:
-        word_and_size = {"text": i[0], "value": i[1]}
-        word_cloud_input.append(word_and_size)
+        # print(initial_list)
+        print(len(initial_list))
+        # print(final_list)
+        print(len(final_list))
+        counter = Counter(final_list)
+        most_occur = counter.most_common(50)
 
+        for i in most_occur:
+            word_and_size = {"text": i[0], "value": i[1]}
+            word_cloud_input.append(word_and_size)
+
+    print(word_cloud_input)
     return word_cloud_input
 
 
@@ -176,54 +313,28 @@ def clean_text(text):
     for word in cleaned_text3:
         # english lemmatization
         # "v" as verbs - return lemma of all verbs
-        # lemmatized_word = wnl.lemmatize(word, "v")
+        lemmatized_word = wnl.lemmatize(word, "v")
         # indonesian (similar to malay) stemming and lemmatization
         # https://pypi.org/project/PySastrawi/
         # ref: https://malaya.readthedocs.io/en/latest/load-stemmer.html
         # print(word, " : ", stemmer.stem(word))
-        lemmatized_word = stemmer.stem(word)
+        lemmatized_word = stemmer.stem(lemmatized_word)
         list_of_words_per_tweet.append(lemmatized_word)
 
     # print(list_of_words_per_tweet)
     return list_of_words_per_tweet
 
-
-# make keyword lower case
-# for each tweet
-# lower case text
-# find match for tweet text
-# if yes, append to list
-# return {"data": list}
-# ref: https://www.w3schools.com/python/python_regex.asp#findall
-def show_tweets_by_keyword(keyword):
-    tweet_list = []
-    keyword = str.lower(keyword)
-    data = get_full_tweet_json('data/tweets_with_translations.csv')
-    data1 = data["data"]
-    for tweet in data1:
-        text = str.lower(tweet["text"])
-        x = re.findall(keyword, text)
-        # if x is not an empty list, meaning there's a match, append tweet to tweet_list
-        if x:
-            tweet_list.append(tweet)
-    if tweet_list:
-        response = {"data": tweet_list}
-    else:
-        response = 'No match, please enter a different keyword.'
-    return response
-
-
-def show_total_tweet_counts(sentiment):
-    tweet_count = []
-    data = show_tweets(sentiment)
-    data1 = data["data"]
-    for tweet in data1:
-        tweet_count.append(tweet)
-
-    return len(tweet_count)
+#
+# def show_total_tweet_counts(sentiment):
+#     tweet_count = []
+#     data = show_tweets_by_sentiment(sentiment)
+#     data1 = data["data"]
+#     for tweet in data1:
+#         tweet_count.append(tweet)
+#
+#     return len(tweet_count)
 
 
 # method to delete irrelevant tweets
 def delete_tweet_from_database(keyword):
     return []
-

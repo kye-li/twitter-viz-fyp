@@ -8,7 +8,7 @@ const Cloud = ({ wordCloudProp }) => {
                    height={200}
                    font="Times"
                    fontWeight="bold"
-                   fontSize={(word) => Math.log2(word.value) * 2}
+                   fontSize={(word) => Math.log2(word.value) * 5}
         />
     )
 };

@@ -17,27 +17,33 @@ async def sentiment_analysis(keyword):
     return response
 
 
-@app.get("/show-tweets")
-async def show_tweets(sentiment):
-    response = updateDashboard.show_tweets(str(sentiment))
+@app.get("/show-all-tweets")
+async def show_all_tweets(file='data/tweets_with_translations.csv'):
+    response = updateDashboard.show_all_tweets(file)
+    return response
+
+
+@app.get("/show-tweets-by-sentiment")
+async def show_tweets_by_sentiment(keyword='', sentiment='all'):
+    response = updateDashboard.show_tweets_by_sentiment(str(keyword), str(sentiment))
     return response
 
 
 @app.get("/show-tweets-by-keyword")
 async def show_tweets_by_keyword(keyword):
-    response = updateDashboard.show_tweets_by_keyword(keyword)
+    response = updateDashboard.show_tweets_by_keyword(str(keyword))
     return response
 
 
 @app.get("/pie-chart")
-async def pie_chart():
-    response = updateDashboard.pie_chart_data('data/tweets_with_translations.csv')
+async def pie_chart(keyword=''):
+    response = updateDashboard.pie_chart_data(str(keyword))
     return response
 
 
 @app.get("/word-cloud")
-async def show_word_cloud():
-    response = updateDashboard.show_word_frequency('data/tweets_with_translations.csv')
+async def show_word_cloud(keyword='', sentiment='all'):
+    response = updateDashboard.show_word_frequency(str(keyword), str(sentiment))
     return response
 
 

@@ -13,17 +13,36 @@ function App() {
     // const [posts, setPosts] = useState({});
     const [sentimentTweets, setSentimentTweets] = useState({});
     const [searchInput, setSearchInput] = useState("");
-    const [pieChartData, setPieChartData] = useState([1, 1, 1]);
+    const [pieChartData, setPieChartData] = useState([]);
     const [wordCloudData, setWordCloudData] = useState([])
-    // const ngrokURL = process.env.REACT_APP_NGROK_BASE_URL;
-    // const [wordCloud, setWordCloud] = useState('https://about.twitter.com/content/dam/about-twitter/en/brand-toolkit/brand-download-img-1.jpg.twimg.1920.jpg')
+    const [pieChartStats, setPieChartStats] = useState("");
+    const [searchText, setSearchText] = useState("Now showing dashboard for all tweets related " +
+        "to Malaysia's 15th General Election.")
+    const [topTenWords, setTopTenWords] = useState("")
 
-    // ChartJS.register(ArcElement, Tooltip, Legend);
 
-    const updatePieChart = async () => {
+    const showAllTweets = async () => {
+        const response = await fetch(
+            "/show-all-tweets", {
+                method: "get"
+        });
+        const data = await response.json()
+
+        if (!response.ok) {
+            console.log("something messed up");
+        } else {
+            setSentimentTweets(data);
+            console.log(data)
+        }
+    };
+
+
+    const updatePieChartByKeyword = async ({keyword}) => {
         const response = await fetch(
             "/pie-chart?" +
-            {
+            new URLSearchParams({
+                keyword: keyword,
+            }), {
                 method: "get"
             });
 
@@ -34,13 +53,26 @@ function App() {
         } else {
             setPieChartData(data);
             console.log(data)
+            let total, pos, neu, neg, stats;
+            total = data[0] + data[1] + data[2];
+            pos = data[0];
+            neu = data[1];
+            neg = data[2];
+
+            stats = "Total tweets: " + String(total) + "\n"
+                + "Positive: " + String(pos) + "\n"
+                + "Neutral: " + String(neu) + "\n"
+                + "Negative: " + String(neg);
+            setPieChartStats(stats)
         }
     };
 
-    const getTweetsWithSentiment = async ({sentiment}) => {
+
+    const getTweetsWithSentiment = async (keyword, sentiment) => {
         const response = await fetch(
-            "/show-tweets?" +
+            "/show-tweets-by-sentiment?" +
             new URLSearchParams({
+                keyword: keyword,
                 sentiment: sentiment,
             }), {
                 method: "get"
@@ -50,7 +82,10 @@ function App() {
 
         if (!response.ok) {
             console.log("something messed up");
-        } else {
+        } else if (data.length === 1) {
+            alert(data);
+        }
+        else {
             setSentimentTweets(data);
             console.log(data)
         }
@@ -69,32 +104,27 @@ function App() {
 
         if (!response.ok) {
             console.log("something messed up");
-        } else {
+        } else if (typeof data === "string") {
+            alert(data);
+            setSearchText("Dashboard is empty as there is no match for tweets containing keyword. " +
+                "Please enter a different keyword.")
+        }
+        else {
             setSentimentTweets(data);
             console.log(data)
         }
 
-        if (data === "No match, please enter a different keyword.") {
-            alert(data)
-        }
-
     };
 
-
-
-    const enterSearch = (e) => {
-        e.preventDefault();
-        // alert(`The search value you entered was : ${searchInput}`);
-        // getTweets({ query: `${searchInput}` });
-        getTweetsByKeyword({keyword: `${searchInput}`});
-        // updatePieChart({keyword: `${searchInput}`});
-    };
-
-
-    const updateWordCloud = async () => {
+    const updateWordCloud = async (keyword, sentiment) => {
         const response = await fetch(
-            "/word-cloud"
-        );
+            "/word-cloud?" +
+            new URLSearchParams({
+                keyword: keyword,
+                sentiment: sentiment
+            }), {
+                method: "get"
+            });
 
         const data = await response.json()
 
@@ -103,75 +133,135 @@ function App() {
         } else {
             setWordCloudData(data)
             console.log(data)
+            // data is an array of {text: '', value: }
+            let word;
+            let size;
+            let topTenString = '';
+            for(let i = 0; i < 10; i++){
+                word = data[i].text;
+                size = data[i].value;
+                topTenString += word + " (" + size + " words)" + ", ";
+            }
+            if (keyword===''){
+                setTopTenWords("Top 10 words for " + sentiment + " tweets in the database " +
+                    "are: " + "\n" + topTenString + ".");
+            }
+            else {
+                setTopTenWords("Top 10 words for " + sentiment + " tweets with the keyword: "
+                    + keyword + " are: " + "\n" + topTenString + ".");
+            }
         }
     };
 
 
-        // useEffect(() => {
-        //     fetchNgrokURL();
-        // }, []);
+    const enterSearch = (e) => {
+        e.preventDefault();
+        if (searchInput === '') {
+            alert("Please enter a keyword to search.")
+            setSentimentTweets({})
+            setPieChartData([])
+            setPieChartStats("")
+            setWordCloudData([])
+            setSearchText("Dashboard is empty as no keyword is searched.")
+        } else {
+            let value;
+            value = searchInput;
+            setSearchText("Now showing dashboard for keyword: " + value);
+            // alert(`The search value you entered was : ${searchInput}`);
+            // getTweets({ query: `${searchInput}` });
+            getTweetsByKeyword({keyword: `${searchInput}`});
+            updatePieChartByKeyword({keyword: `${searchInput}`});
+            updateWordCloud(searchInput,'all');
+        }
+    };
+
+    const sentimentButton = (keyword, sentiment) => {
+        getTweetsWithSentiment(keyword, sentiment);
+        updateWordCloud(keyword, sentiment);
+    };
+
+    useEffect(() => {
+        updatePieChartByKeyword({keyword: ''});
+        showAllTweets();
+        updateWordCloud('','all')
+    }, []);
 
         return (
             <ChakraProvider>
-                <Container minH="100vh" minW="100vw" overflow="hidden">
-                    <Text fontWeight="bold" textAlign="center" h="5vh">
-                        Twitter Open Data Analyses and Visualisations 😊
+                <Container minH="100vh" minW="100vw" overflow="hidden" backgroundColor="purple">
+                    <Text fontWeight="bold" textAlign="center" h="5vh" color="white" fontSize="large">
+                        Twitter Open Data Analyses and Visualisations: A closer look into sentiments during Malaysia's 15th General Election
                     </Text>
-                    <SimpleGrid columns={2} spacing={"1vh"} h="95vh">
-                        <Container bg="lightgreen" h="47vh" minW="100%">
+                    <SimpleGrid columns={2} spacing={"0vh"} h="95vh" padding={1}>
+                        <Container bg="lavender" h="47vh" minW="100%" border="2px" overflow="scroll">
                             <form onSubmit={enterSearch}>
-                                <label>Enter your search word here: </label>
+                                <label><b>Enter your search word here: </b></label>
                                 <input
                                     type="text"
                                     value={searchInput}
                                     onChange={(e) => setSearchInput(e.target.value)}
                                 />
-                                <input type="submit" name="search"/>
+                                <input type="submit" />
                             </form>
+                            <Text fontSize={"medium"} border={"2px"}>{searchText}</Text>
+                            <Button fontSize={"xs"}
+                                onClick={() =>updatePieChartByKeyword({keyword: ''})}
+                            >
+                                Default Pie Chart
+                            </Button>
+                            <Text fontWeight={"bold"} fontSize={"medium"}>{pieChartStats}</Text>
+                            <PieChart pieChartProp={pieChartData} />
                         </Container>
                         <Container
                             className="tweetsDisplay"
-                            bg="lightgreen"
+                            bg="lavender"
                             h="47vh"
                             minW="100%"
+                            border="2px"
                         >
-                            <Button
-                                onClick={() => getTweetsWithSentiment({sentiment: 'positive'})}
+                            <Button fontSize={"xs"}
+                                onClick={() => sentimentButton(searchInput, 'positive')}
                             >
-                                Show Positive Tweets
+                                Show Positive Only
                             </Button>
-                            <Button
-                                onClick={() => getTweetsWithSentiment({sentiment: 'negative'})}
+                            <Button fontSize={"xs"}
+                                onClick={() => sentimentButton(searchInput,'negative')}
                             >
-                                Show Negative Tweets
+                                Show Negative Only
                             </Button>
-                            <Button
-                                onClick={() => getTweetsWithSentiment({sentiment: 'neutral'})}
+                            <Button fontSize={"xs"}
+                                onClick={() => sentimentButton(searchInput,'neutral')}
                             >
-                                Show Neutral Tweets
+                                Show Neutral Only
                             </Button>
-                            <Button
-                                onClick={() => getTweetsWithSentiment({sentiment: 'all'})}
+                            <Button fontSize={"xs"}
+                                onClick={() => sentimentButton(searchInput,'all')}
                             >
-                                Show All Tweets
+                                Show All
+                            </Button>
+                            <Button fontSize={"xs"}
+                                onClick={() => showAllTweets()}
+                            >
+                                Default Tweets
                             </Button>
                             <TweetDisplay tweetDisplayProp={sentimentTweets} />
                         </Container>
-                        <Container bg="lightgreen" h="47vh" minW="100%" overflow="scroll">
-                            <Button
-                                onClick={() => updatePieChart()}
-                            >
-                                Update Pie Chart
-                            </Button>
-                            <PieChart pieChartProp={pieChartData}  />
+                        <Container bg="lavender" h="47vh" minW="100%" border="2px" overflow="scroll">
                         </Container>
-                        <Container bg="lightgreen" h="47vh" minW="100%">
+                        <Container bg="lavender" h="47vh" minW="100%" overflow="scroll" border="2px">
+                            <Text fontWeight={"bold"} color={"purple"} fontStyle={"italic"}>{topTenWords}</Text>
                             <WordCloud wordCloudProp={wordCloudData}/>
-                            <Button
-                                onClick={() => updateWordCloud()}
+                            {/*<Button*/}
+                            {/*    onClick={() => updateWordCloud(`${searchInput}`)}*/}
+
+                            {/*>*/}
+                            {/*    Update Word Cloud*/}
+                            {/*</Button>*/}
+                            <Button fontSize={"xs"}
+                                onClick={() => updateWordCloud('', 'all')}
 
                             >
-                                Update Word Cloud
+                                Default Word Cloud
                             </Button>
                         </Container>
                     </SimpleGrid>
