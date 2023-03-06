@@ -2,7 +2,6 @@ from fastapi import FastAPI
 import requests
 import uvicorn
 import getAndStoreTweets
-from fastapi.responses import FileResponse
 import updateDashboard
 
 # TODO: error handling
@@ -24,6 +23,12 @@ async def show_tweets(sentiment):
     return response
 
 
+@app.get("/show-tweets-by-keyword")
+async def show_tweets_by_keyword(keyword):
+    response = updateDashboard.show_tweets_by_keyword(keyword)
+    return response
+
+
 @app.get("/pie-chart")
 async def pie_chart():
     response = updateDashboard.pie_chart_data('data/tweets_with_translations.csv')
@@ -31,9 +36,9 @@ async def pie_chart():
 
 
 @app.get("/word-cloud")
-async def show_word_cloud(keyword):
-    getAndStoreTweets.get_wordcloud(str(keyword))
-    return FileResponse("../wc.png")
+async def show_word_cloud():
+    response = updateDashboard.show_word_frequency('data/tweets_with_translations.csv')
+    return response
 
 
 if __name__ == "__main__":

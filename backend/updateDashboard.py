@@ -1,7 +1,7 @@
+import json
 import os
 import csv
 import re
-
 import nltk
 from nltk.tokenize import word_tokenize
 # from nltk.stem import PorterStemmer
@@ -126,8 +126,7 @@ def show_tweets(sentiment):
 # run most-common function
 def show_word_frequency(file):
     global most_occur
-    initial_list = []
-    final_list = []
+    initial_list, final_list, word_cloud_input = [], [], []
     data = get_full_tweet_json(file)
     data1 = data["data"]
     # get full list of tweets
@@ -147,16 +146,18 @@ def show_word_frequency(file):
                 # a list to check how many words after excluding stopwords and numbers
                 # in both eng and indonesian (similar to malay)
 
-    print(initial_list)
-    print(len(initial_list))
+    # print(initial_list)
+    # print(len(initial_list))
     # print(final_list)
-    print(len(final_list))
+    # print(len(final_list))
     counter = Counter(final_list)
     most_occur = counter.most_common(100)
 
-    print(most_occur)
+    for i in most_occur:
+        word_and_size = {"text": i[0], "value": i[1]}
+        word_cloud_input.append(word_and_size)
 
-    return most_occur
+    return word_cloud_input
 
 
 def clean_text(text):
@@ -187,14 +188,29 @@ def clean_text(text):
     return list_of_words_per_tweet
 
 
+# make keyword lower case
+# for each tweet
+# lower case text
+# find match for tweet text
+# if yes, append to list
+# return {"data": list}
+# ref: https://www.w3schools.com/python/python_regex.asp#findall
 def show_tweets_by_keyword(keyword):
-    # make keyword lower case
-    # for each tweet
-    # lower case text
-    # find match for tweet text
-    # if yes, append to list
-    # return {"data": list}
-    return []
+    tweet_list = []
+    keyword = str.lower(keyword)
+    data = get_full_tweet_json('data/tweets_with_translations.csv')
+    data1 = data["data"]
+    for tweet in data1:
+        text = str.lower(tweet["text"])
+        x = re.findall(keyword, text)
+        # if x is not an empty list, meaning there's a match, append tweet to tweet_list
+        if x:
+            tweet_list.append(tweet)
+    if tweet_list:
+        response = {"data": tweet_list}
+    else:
+        response = 'No match, please enter a different keyword.'
+    return response
 
 
 def show_total_tweet_counts(sentiment):
@@ -207,5 +223,7 @@ def show_total_tweet_counts(sentiment):
     return len(tweet_count)
 
 
-show_word_frequency('data/tweets_with_translations.csv')
-# clean_text('Hi my name is Bella')
+# method to delete irrelevant tweets
+def delete_tweet_from_database(keyword):
+    return []
+

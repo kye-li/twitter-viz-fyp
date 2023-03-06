@@ -11,7 +11,7 @@ const TweetDisplay = ({ tweetDisplayProp }) => {
         } else if (sentiment === "negative") {
             colour = 'blue';
         } else {
-            colour = 'darkyellow';
+            colour = 'darkgreen';
         }
         return colour;
     }

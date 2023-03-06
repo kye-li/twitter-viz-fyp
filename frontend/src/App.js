@@ -7,12 +7,14 @@ import PieChart from "./components/PieChart";
 import { SimpleGrid } from '@chakra-ui/react'
 // ref: https://chakra-ui.com/docs/components/simple-grid/usage
 import TweetDisplay from "./components/TweetDisplay";
+import WordCloud from "./components/WordCloud";
 
 function App() {
     // const [posts, setPosts] = useState({});
     const [sentimentTweets, setSentimentTweets] = useState({});
-    // const [searchInput, setSearchInput] = useState("");
+    const [searchInput, setSearchInput] = useState("");
     const [pieChartData, setPieChartData] = useState([1, 1, 1]);
+    const [wordCloudData, setWordCloudData] = useState([])
     // const ngrokURL = process.env.REACT_APP_NGROK_BASE_URL;
     // const [wordCloud, setWordCloud] = useState('https://about.twitter.com/content/dam/about-twitter/en/brand-toolkit/brand-download-img-1.jpg.twimg.1920.jpg')
 
@@ -54,33 +56,55 @@ function App() {
         }
     };
 
+    const getTweetsByKeyword = async ({keyword}) => {
+        const response = await fetch(
+            "/show-tweets-by-keyword?" +
+            new URLSearchParams({
+                keyword: keyword,
+            }), {
+                method: "get"
+            });
 
-    // const enterSearch = (e) => {
-    //     e.preventDefault();
-    //     // alert(`The search value you entered was : ${searchInput}`);
-    //     // getTweets({ query: `${searchInput}` });
-    //     getTweetsWithSentiment({keyword: `${searchInput}`});
-    //     updatePieChart({keyword: `${searchInput}`});
-    // };
-    //
-    // const createWordCloud = () => {
-    //     setWordCloud(ngrokURL + 'word-cloud?keyword=' + `${searchInput}`);
-    //     alert('WordCloud will start loading after OK has been pressed. It may take up to 30 seconds.');
-    // }
-    //
-    // const updateWordCloud = async ({keyword}) => {
-    //     const response = await fetch(
-    //         "/word-cloud?" +
-    //         new URLSearchParams({
-    //             keyword: keyword,
-    //         })
-    //     );
-    //     if (!response.ok) {
-    //         console.log("something messed up");
-    //     } else {
-    //         setWordCloud(ngrokURL + 'word-cloud?keyword=' + keyword);
-    //         console.log(ngrokURL + 'word-cloud?keyword=' + keyword)
-    //     }
+        const data = await response.json()
+
+        if (!response.ok) {
+            console.log("something messed up");
+        } else {
+            setSentimentTweets(data);
+            console.log(data)
+        }
+
+        if (data === "No match, please enter a different keyword.") {
+            alert(data)
+        }
+
+    };
+
+
+
+    const enterSearch = (e) => {
+        e.preventDefault();
+        // alert(`The search value you entered was : ${searchInput}`);
+        // getTweets({ query: `${searchInput}` });
+        getTweetsByKeyword({keyword: `${searchInput}`});
+        // updatePieChart({keyword: `${searchInput}`});
+    };
+
+
+    const updateWordCloud = async () => {
+        const response = await fetch(
+            "/word-cloud"
+        );
+
+        const data = await response.json()
+
+        if (!response.ok) {
+            console.log("something messed up");
+        } else {
+            setWordCloudData(data)
+            console.log(data)
+        }
+    };
 
 
         // useEffect(() => {
@@ -95,7 +119,15 @@ function App() {
                     </Text>
                     <SimpleGrid columns={2} spacing={"1vh"} h="95vh">
                         <Container bg="lightgreen" h="47vh" minW="100%">
-                            <Text>Hello</Text>
+                            <form onSubmit={enterSearch}>
+                                <label>Enter your search word here: </label>
+                                <input
+                                    type="text"
+                                    value={searchInput}
+                                    onChange={(e) => setSearchInput(e.target.value)}
+                                />
+                                <input type="submit" name="search"/>
+                            </form>
                         </Container>
                         <Container
                             className="tweetsDisplay"
@@ -125,34 +157,22 @@ function App() {
                             </Button>
                             <TweetDisplay tweetDisplayProp={sentimentTweets} />
                         </Container>
-
-                        {/*<div className='rowA'>*/}
-                    {/*    <div className='searchBar'>*/}
-                    {/*    <form onSubmit={enterSearch}>*/}
-                    {/*        <label>Enter your search word here: </label>*/}
-                    {/*        <input*/}
-                    {/*            type="text"*/}
-                    {/*            value={searchInput}*/}
-                    {/*            onChange={(e) => setSearchInput(e.target.value)}*/}
-                    {/*        />*/}
-                    {/*        <input type="submit" name="search"/>*/}
-                    {/*    </form>*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
-                    {/*<div className='rowB'>*/}
-                    {/*    <Button onClick={() => createWordCloud()} >Load WordCloud</Button>*/}
-                    {/*    <Image src={wordCloud} />*/}
-                    {/*</div>*/}
-                        <Container bg="lightgreen" h="47vh" minW="100%">
-                            <PieChart pieChartProp={pieChartData}  />
+                        <Container bg="lightgreen" h="47vh" minW="100%" overflow="scroll">
                             <Button
                                 onClick={() => updatePieChart()}
                             >
                                 Update Pie Chart
                             </Button>
+                            <PieChart pieChartProp={pieChartData}  />
                         </Container>
                         <Container bg="lightgreen" h="47vh" minW="100%">
-                            <Text>Hello4</Text>
+                            <WordCloud wordCloudProp={wordCloudData}/>
+                            <Button
+                                onClick={() => updateWordCloud()}
+
+                            >
+                                Update Word Cloud
+                            </Button>
                         </Container>
                     </SimpleGrid>
                 </Container>
