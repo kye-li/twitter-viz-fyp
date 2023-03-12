@@ -22,7 +22,7 @@ const TweetDisplay = ({ tweetDisplayProp }) => {
     return (
         <div>
             {tweetDisplayProp?.data?.map((p, i) => (
-                <Box marginTop="20px" key={i}>
+                <Box marginTop="20px" key={i} border={"1px"} borderColor={"orchid"}>
                     {p.text}<Text fontWeight="bold" color={sentiment_text_colour(p.overall_sentiment)}> Sentiment: {p.overall_sentiment}</Text>
                     <Text fontWeight="bold"> Translation: {p.translation}</Text>
                 </Box>

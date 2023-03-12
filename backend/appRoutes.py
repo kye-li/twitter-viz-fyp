@@ -23,8 +23,8 @@ async def show_all_tweets(file='data/tweets_with_translations.csv'):
 
 
 @app.get("/show-tweets-by-sentiment")
-async def show_tweets_by_sentiment(keyword='', sentiment='all'):
-    response = updateDashboard.show_tweets_by_sentiment(str(keyword), str(sentiment))
+async def show_tweets_by_sentiment(keyword='', sentiment='all', date=''):
+    response = updateDashboard.show_tweets_by_sentiment(str(keyword), str(sentiment), str(date))
     return response
 
 

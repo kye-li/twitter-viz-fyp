@@ -25,6 +25,7 @@ stemmer = factory.create_stemmer()
 a_pos_list, a_neg_list, a_neu_list = [], [], []
 k_pos_list, k_neg_list, k_neu_list = [], [], []
 s_pos_list, s_neg_list, s_neu_list = [], [], []
+d_pos_list, d_neg_list, d_neu_list = [], [], []
 
 pos_count, neg_count, neu_count = 0, 0, 0
 
@@ -162,32 +163,57 @@ def pie_chart_data(keyword=''):
 # return tweets by sentiment
 
 # equivalent to show tweets by sentiment (for button usage)
-def show_tweets_by_sentiment(keyword='', sentiment='all'):
+def show_tweets_by_sentiment(keyword='', sentiment='all', date=''):
     global s_pos_list, s_neu_list, s_neg_list
     s_pos_list.clear()
     s_neu_list.clear()
     s_neg_list.clear()
 
+    tweet_display = {}
+
     if keyword == '':
         # print('sentiment: ', sentiment, 'keyword: ', keyword)
         data = show_all_tweets()
         # print('showing all tweets')
-        s_pos_list = a_pos_list
-        s_neu_list = a_neu_list
-        s_neg_list = a_neg_list
-        # print(len(s_pos_list), len(s_neu_list), len(s_neg_list))
+        # if there is a date specified
+        if not date == '':
+            if isinstance(data, str):
+                tweet_display = {data}
+                # print(tweet_display)
+                return tweet_display
+            else:
+                data = get_tweets_by_date(data, date)
+                s_pos_list = d_pos_list
+                s_neu_list = d_neu_list
+                s_neg_list = d_neg_list
+        else:
+            s_pos_list = a_pos_list
+            s_neu_list = a_neu_list
+            s_neg_list = a_neg_list
+            # print(len(s_pos_list), len(s_neu_list), len(s_neg_list))
     else:
         data = show_tweets_by_keyword(keyword)
         # print('sentiment: ', sentiment, 'keyword: ', keyword)
         # print('showing ', sentiment, 'tweets of ', keyword)
-        s_pos_list = k_pos_list
-        s_neu_list = k_neu_list
-        s_neg_list = k_neg_list
-
-    tweet_display = {}
+        if not date == '':
+            if isinstance(data, str):
+                tweet_display = {data}
+                # print(tweet_display)
+                return tweet_display
+            else:
+                data = get_tweets_by_date(data, date)
+                s_pos_list = d_pos_list
+                s_neu_list = d_neu_list
+                s_neg_list = d_neg_list
+        else:
+            s_pos_list = k_pos_list
+            s_neu_list = k_neu_list
+            s_neg_list = k_neg_list
 
     if isinstance(data, str):  # check if data is an error message (which is a string)
         tweet_display = {data}
+        # print(tweet_display)
+        return tweet_display
     else:
         if sentiment == 'positive':
             if s_pos_list:
@@ -207,6 +233,8 @@ def show_tweets_by_sentiment(keyword='', sentiment='all'):
         elif sentiment == 'all':
             tweet_display = data
 
+    # print(tweet_display)
+    # print(len(tweet_display["data"]))
     return tweet_display
 
 
@@ -253,7 +281,7 @@ def show_word_frequency(keyword='', sentiment='all'):
                 # print(len(data1))
             else:
                 word_cloud_input = []
-                print(word_cloud_input)
+                # print(word_cloud_input)
                 return word_cloud_input
         elif sentiment == 'negative':
             # print('neg')
@@ -262,7 +290,7 @@ def show_word_frequency(keyword='', sentiment='all'):
                 # print(len(data1))
             else:
                 word_cloud_input = []
-                print(word_cloud_input)
+                # print(word_cloud_input)
                 return word_cloud_input
         elif sentiment == 'neutral':
             # print('neu')
@@ -271,7 +299,7 @@ def show_word_frequency(keyword='', sentiment='all'):
                 # print(len(data1))
             else:
                 word_cloud_input = []
-                print(word_cloud_input)
+                # print(word_cloud_input)
                 return word_cloud_input
         elif sentiment == 'all':
             # print('all')
@@ -390,7 +418,7 @@ def line_chart_input(keyword='', sentiment='all'):
 
     if isinstance(data, str):  # check if data is an error message (which is a string)
         final_date_tweet_count = []
-        print(data)
+        # print(data)
     else:
         # check for sentiment, return respective tweets
         if sentiment == 'positive':
@@ -400,8 +428,8 @@ def line_chart_input(keyword='', sentiment='all'):
                 # print(len(data1))
             else:
                 final_date_tweet_count = []
-                print('No positive tweets')
-                print(final_date_tweet_count)
+                # print('No positive tweets')
+                # print(final_date_tweet_count)
                 return final_date_tweet_count
         elif sentiment == 'negative':
             # print('neg')
@@ -410,8 +438,8 @@ def line_chart_input(keyword='', sentiment='all'):
                 # print(len(data1))
             else:
                 final_date_tweet_count = []
-                print('No negative tweets')
-                print(final_date_tweet_count)
+                # print('No negative tweets')
+                # print(final_date_tweet_count)
                 return final_date_tweet_count
         elif sentiment == 'neutral':
             # print('neu')
@@ -420,8 +448,8 @@ def line_chart_input(keyword='', sentiment='all'):
                 # print(len(data1))
             else:
                 final_date_tweet_count = []
-                print('No neutral tweets')
-                print(final_date_tweet_count)
+                # print('No neutral tweets')
+                # print(final_date_tweet_count)
                 return final_date_tweet_count
         elif sentiment == 'all':
             # print('all')
@@ -460,10 +488,13 @@ def line_chart_input(keyword='', sentiment='all'):
 
 # get tweet by date
 # TODO: fit it with sentiment and keyword
-def get_tweets_by_date(date):
-    data = show_all_tweets()
+def get_tweets_by_date(data, date=''):
+    global d_pos_list, d_neg_list, d_neu_list
     data1 = data["data"]
     tweet_with_date = []
+    d_pos_list.clear()
+    d_neg_list.clear()
+    d_neu_list.clear()
 
     for tweet in data1:
         tweet_datetime = tweet['created_at']
@@ -475,14 +506,22 @@ def get_tweets_by_date(date):
     if len(tweet_with_date) == 0:
         tweet_display = {"No tweets available in the database on this date."}
     # print(tweet_with_date)
+
     else:
+        for tweet in tweet_with_date:
+            sentiment = tweet['overall_sentiment']
+            if sentiment == "positive":
+                d_pos_list.append(tweet)
+            elif sentiment == "negative":
+                d_neg_list.append(tweet)
+            elif sentiment == "neutral":
+                d_neu_list.append(tweet)
+
         tweet_display = {"data": tweet_with_date}
+
     return tweet_display
 
 
 # method to delete irrelevant tweets
 def delete_tweet_from_database(keyword):
     return []
-
-
-

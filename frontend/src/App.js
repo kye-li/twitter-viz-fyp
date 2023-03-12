@@ -16,6 +16,7 @@ import "react-datepicker/dist/react-datepicker.css";
 function App() {
     // const [posts, setPosts] = useState({});
     const [sentimentTweets, setSentimentTweets] = useState({});
+    const [tweetDisplayText, setTweetDisplayText] = useState("Now showing all tweets in database.")
     const [searchInput, setSearchInput] = useState("");
     const [pieChartData, setPieChartData] = useState([]);
     const [wordCloudData, setWordCloudData] = useState([])
@@ -25,7 +26,7 @@ function App() {
     const [topTenWords, setTopTenWords] = useState("")
     const [lineChartData, setLineChartData] = useState([]);
     const [lineChartStats, setLineChartStats] = useState('');
-    const [startDate, setStartDate] = useState('');
+    const [startDate, setStartDate] = useState(null);
 
 
     const showAllTweets = async () => {
@@ -38,6 +39,7 @@ function App() {
         if (!response.ok) {
             console.log("something messed up");
         } else {
+            setTweetDisplayText("Now showing all tweets in database.");
             setSentimentTweets(data);
             console.log(data)
         }
@@ -75,12 +77,20 @@ function App() {
     };
 
 
-    const getTweetsWithSentiment = async (keyword, sentiment) => {
+    const getTweetsWithSentiment = async (keyword, sentiment, date) => {
+
+        if(date !== null){
+            date = date.toISOString().split('T')[0];
+        } else {
+            date = '';
+        }
+
         const response = await fetch(
             "/show-tweets-by-sentiment?" +
             new URLSearchParams({
                 keyword: keyword,
                 sentiment: sentiment,
+                date: date,
             }), {
                 method: "get"
             });
@@ -90,10 +100,18 @@ function App() {
         if (!response.ok) {
             console.log("something messed up");
         } else if (data.length === 1) {
-            alert(data);
+            if(date === '') {
+                alert(data);
+                setTweetDisplayText(data)
+            }
+            else {
+                alert(data + " on this date: " + date);
+                setTweetDisplayText(data + " on this date: " + date)
+            }
             setSentimentTweets({})
         }
         else {
+            setTweetDisplayText("Now showing " + sentiment + " tweets with keyword: " + keyword + ", on date: " + date)
             setSentimentTweets(data);
             console.log(data)
         }
@@ -114,6 +132,7 @@ function App() {
             console.log("something messed up");
         } else if (typeof data === "string") {
             alert(data);
+            setTweetDisplayText(data)
             setSentimentTweets({})
             setSearchText("Dashboard is empty as there is no match for tweets containing keyword. " +
                 "Please enter a different keyword.")
@@ -123,6 +142,7 @@ function App() {
                 "Please enter a different keyword.")
         }
         else {
+            setTweetDisplayText("Now showing tweets with the keyword: " + keyword)
             setSentimentTweets(data);
             console.log(data)
         }
@@ -153,7 +173,7 @@ function App() {
                 for (let i = 0; i < 10; i++) {
                     word = data[i].text;
                     size = data[i].value;
-                    topTenString += word + " (" + size + " words)" + ", ";
+                    topTenString += word + " (" + size + " times)" + ", ";
                 }
                 if (keyword === '') {
                     setTopTenWords("Top 10 words for " + sentiment + " tweets in the database " +
@@ -194,36 +214,37 @@ function App() {
     };
 
     // ref: https://stackoverflow.com/questions/23593052/format-javascript-date-as-yyyy-mm-dd
-    const showTweetsByDate = async (date) => {
-        const response = await fetch(
-            "/show-tweets-by-date?" +
-            new URLSearchParams({
-                date: date.toISOString().split('T')[0],
-            }), {
-                method: "get"
-            });
-
-        const data = await response.json()
-
-        if (!response.ok) {
-            console.log("something messed up");
-        } else if (data.length === 1) {
-            alert(data);
-            setSentimentTweets({})
-        }
-        else {
-            setStartDate(date)
-            setSentimentTweets(data);
-            console.log(data)
-        }
-
-    };
-
+    // const showTweetsByDate = async (date) => {
+    //     const response = await fetch(
+    //         "/show-tweets-by-date?" +
+    //         new URLSearchParams({
+    //             date: date.toISOString().split('T')[0],
+    //         }), {
+    //             method: "get"
+    //         });
+    //
+    //     const data = await response.json()
+    //
+    //     if (!response.ok) {
+    //         console.log("something messed up");
+    //     } else if (data.length === 1) {
+    //         alert(data);
+    //         setSentimentTweets({})
+    //     }
+    //     else {
+    //         setStartDate(date)
+    //         setSentimentTweets(data);
+    //         console.log(data)
+    //     }
+    //
+    // };
+    //
 
     const enterSearch = (e) => {
         e.preventDefault();
         if (searchInput === '') {
             alert("Please enter a keyword to search.")
+            setTweetDisplayText("Please enter a keyword to search.")
             setSentimentTweets({})
             setPieChartData([])
             setPieChartStats("Please enter a keyword to search.")
@@ -238,23 +259,34 @@ function App() {
             // alert(`The search value you entered was : ${searchInput}`);
             // getTweets({ query: `${searchInput}` });
             getTweetsByKeyword({keyword: `${searchInput}`});
+            console.log("enterSearch: gettweetsbykeyword")
             updatePieChartByKeyword({keyword: `${searchInput}`});
+            console.log("enterSearch: updatepiechartbykeyword")
             updateWordCloud(searchInput,'all');
+            console.log("enterSearch: updatewordcloud")
             updateLineChart(searchInput, 'all');
+            console.log("enterSearch: updatelinechart")
         }
     };
 
-    const sentimentButton = (keyword, sentiment) => {
-        getTweetsWithSentiment(keyword, sentiment);
+    const sentimentButton = (keyword, sentiment, date) => {
+        getTweetsWithSentiment(keyword, sentiment, date);
+        console.log("sentimentButton: gettweetswithsentiment")
         updateLineChart(keyword, sentiment)
+        console.log("sentimentButton: updatelinechart")
         updateWordCloud(keyword, sentiment);
+        console.log("sentimentButton: updatewordcloud")
     };
 
     useEffect(() => {
         updatePieChartByKeyword({keyword: ''});
+        console.log("useEffect: piechartupdate")
         showAllTweets();
+        console.log("useEffect: showalltweets")
         updateLineChart('', 'all');
+        console.log("useEffect: linechartupdate")
         updateWordCloud('','all');
+        console.log("useEffect: wordcloudupdate")
     }, []);
 
         return (
@@ -291,27 +323,26 @@ function App() {
                             border="2px"
                         >
                             <Button fontSize={"xs"}
-                                onClick={() => sentimentButton(searchInput, 'positive')}
+                                    position={"sticky"}
+                                    onClick={() => sentimentButton(searchInput, 'positive', startDate)}
                             >
                                 Show Positive Only
                             </Button>
                             <Button fontSize={"xs"}
-                                onClick={() => sentimentButton(searchInput,'negative')}
+                                    position={"sticky"}
+                                    onClick={() => sentimentButton(searchInput,'negative', startDate)}
                             >
                                 Show Negative Only
                             </Button>
                             <Button fontSize={"xs"}
-                                onClick={() => sentimentButton(searchInput,'neutral')}
+                                    position={"sticky"}
+                                    onClick={() => sentimentButton(searchInput,'neutral', startDate)}
                             >
                                 Show Neutral Only
                             </Button>
                             <Button fontSize={"xs"}
-                                onClick={() => sentimentButton(searchInput,'all')}
-                            >
-                                Show All
-                            </Button>
-                            <Button fontSize={"xs"}
-                                onClick={() => showAllTweets()}
+                                    position={"sticky"}
+                                    onClick={() => showAllTweets()}
                             >
                                 Default Tweets
                             </Button>
@@ -320,7 +351,14 @@ function App() {
                                 showIcon
                                 dateFormat="yyyy-MM-dd"
                                 selected={startDate}
-                                onChange={(date) => showTweetsByDate(date)} />
+                                onChange={(date) => setStartDate(date)}
+                            />
+                            <Button fontSize={"xs"}
+                                    onClick={() => sentimentButton(searchInput,'all', startDate)}
+                            >
+                                Show All Tweets By Date
+                            </Button>
+                            <Text fontWeight="bold">{tweetDisplayText}</Text>
                             <TweetDisplay tweetDisplayProp={sentimentTweets} />
                         </Container>
                         <Container bg="lavender" h="47vh" minW="100%" border="2px" overflow="scroll">
