@@ -9,6 +9,8 @@ from nltk.stem import WordNetLemmatizer
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 from nltk.corpus import stopwords
 from collections import Counter
+import datetime
+import pandas as pd
 
 nltk.download('punkt')
 nltk.download("wordnet")
@@ -23,11 +25,14 @@ stemmer = factory.create_stemmer()
 a_pos_list, a_neg_list, a_neu_list = [], [], []
 k_pos_list, k_neg_list, k_neu_list = [], [], []
 s_pos_list, s_neg_list, s_neu_list = [], [], []
-wc_pos_list, wc_neg_list, wc_neu_list = [], [], []
 
 pos_count, neg_count, neu_count = 0, 0, 0
 
 most_occur = []
+current_dict, all_dicts = [], []
+
+created_at1 = ''
+created_at = ''
 
 
 # write methods to be called in appRoutes.py
@@ -220,51 +225,58 @@ def show_tweets_by_sentiment(keyword='', sentiment='all'):
 # run most-common function
 
 def show_word_frequency(keyword='', sentiment='all'):
-    global most_occur, wc_pos_list, wc_neu_list, wc_neg_list
+    global most_occur
     initial_list, final_list, word_cloud_input = [], [], []
+
     data1 = []
     if keyword == '':
         data = show_all_tweets()
         wc_pos_list = a_pos_list
         wc_neu_list = a_neu_list
         wc_neg_list = a_neg_list
-        print('showing word frequency for all tweets')
+        # print('showing word frequency for all tweets')
     else:
         data = show_tweets_by_keyword(keyword)
         wc_pos_list = k_pos_list
         wc_neu_list = k_neu_list
         wc_neg_list = k_neg_list
-        print('showing word frequency for tweets with keyword: ', keyword)
+        # print('showing word frequency for tweets with keyword: ', keyword)
 
     if isinstance(data, str):  # check if data is an error message (which is a string)
         word_cloud_input = []
     else:
         # check for sentiment, return respective tweets
         if sentiment == 'positive':
-            print('pos')
+            # print('pos')
             if wc_pos_list:
                 data1 = wc_pos_list
-                print(len(data1))
+                # print(len(data1))
             else:
                 word_cloud_input = []
+                print(word_cloud_input)
+                return word_cloud_input
         elif sentiment == 'negative':
-            print('neg')
+            # print('neg')
             if wc_neg_list:
                 data1 = wc_neg_list
-                print(len(data1))
+                # print(len(data1))
             else:
                 word_cloud_input = []
+                print(word_cloud_input)
+                return word_cloud_input
         elif sentiment == 'neutral':
-            print('neu')
+            # print('neu')
             if wc_neu_list:
                 data1 = wc_neu_list
-                print(len(data1))
+                # print(len(data1))
             else:
                 word_cloud_input = []
+                print(word_cloud_input)
+                return word_cloud_input
         elif sentiment == 'all':
-            print('all')
+            # print('all')
             data1 = data["data"]
-            print(len(data1))
+            # print(len(data1))
             # get full list of tweets
 
         for tweet in data1:
@@ -283,9 +295,9 @@ def show_word_frequency(keyword='', sentiment='all'):
                     # in both eng and indonesian (similar to malay)
 
         # print(initial_list)
-        print(len(initial_list))
+        # print(len(initial_list))
         # print(final_list)
-        print(len(final_list))
+        # print(len(final_list))
         counter = Counter(final_list)
         most_occur = counter.most_common(50)
 
@@ -293,7 +305,7 @@ def show_word_frequency(keyword='', sentiment='all'):
             word_and_size = {"text": i[0], "value": i[1]}
             word_cloud_input.append(word_and_size)
 
-    print(word_cloud_input)
+    # print(word_cloud_input)
     return word_cloud_input
 
 
@@ -324,17 +336,153 @@ def clean_text(text):
     # print(list_of_words_per_tweet)
     return list_of_words_per_tweet
 
+
 #
 # def show_total_tweet_counts(sentiment):
-#     tweet_count = []
 #     data = show_tweets_by_sentiment(sentiment)
 #     data1 = data["data"]
-#     for tweet in data1:
-#         tweet_count.append(tweet)
+#     tweet_count = len(data1)
 #
-#     return len(tweet_count)
+#     return tweet_count
+
+# datetime
+# method to show tweet by datetime
+# method to feed into line chart
+# separate into different phases (pre, election, and post-election)
+# 3 lines for 3 different sentiments
+# show total at the top
+# toggle between sentiments
+# y measure: tweet counts
+# ref: https://www.geeksforgeeks.org/python-datetime-module/
+
+# use timedelta for date differences (to specify periods of pre, election or post-election)
+# ref: https://www.geeksforgeeks.org/python-datetime-timedelta-class/
+# then use as timezone to convert timings to Malaysian local time
+# ref: https://www.geeksforgeeks.org/python-datetime-astimezone-method/
+
+# read in csv line by line to dataframe
+# add a new column for (use datetime) return date, date and hour
+# use dict update() method
+# append dict to a list of dicts
+# turn list into dataframe
+# use group_by function to separate by date and time
+# ref: https://www.geeksforgeeks.org/python-pandas-dataframe-groupby/
+
+# then refine to by keyword and by sentiment
+
+def line_chart_input(keyword='', sentiment='all'):
+    global created_at1, created_at, all_dicts, current_dict
+
+    data1, final_date_tweet_count = [], []
+
+    if keyword == '':
+        data = show_all_tweets()
+        l_pos_list = a_pos_list
+        l_neu_list = a_neu_list
+        l_neg_list = a_neg_list
+        # print('showing word frequency for all tweets')
+    else:
+        data = show_tweets_by_keyword(keyword)
+        l_pos_list = k_pos_list
+        l_neu_list = k_neu_list
+        l_neg_list = k_neg_list
+        # print('showing word frequency for tweets with keyword: ', keyword)
+
+    if isinstance(data, str):  # check if data is an error message (which is a string)
+        final_date_tweet_count = []
+        print(data)
+    else:
+        # check for sentiment, return respective tweets
+        if sentiment == 'positive':
+            # print('pos')
+            if l_pos_list:
+                data1 = l_pos_list
+                # print(len(data1))
+            else:
+                final_date_tweet_count = []
+                print('No positive tweets')
+                print(final_date_tweet_count)
+                return final_date_tweet_count
+        elif sentiment == 'negative':
+            # print('neg')
+            if l_neg_list:
+                data1 = l_neg_list
+                # print(len(data1))
+            else:
+                final_date_tweet_count = []
+                print('No negative tweets')
+                print(final_date_tweet_count)
+                return final_date_tweet_count
+        elif sentiment == 'neutral':
+            # print('neu')
+            if l_neu_list:
+                data1 = l_neu_list
+                # print(len(data1))
+            else:
+                final_date_tweet_count = []
+                print('No neutral tweets')
+                print(final_date_tweet_count)
+                return final_date_tweet_count
+        elif sentiment == 'all':
+            # print('all')
+            data1 = data["data"]
+            # print(len(data1))
+            # get full list of tweets
+
+        all_dicts.clear()
+        for tweet in data1:
+            created_at = tweet['created_at']
+            created_at1 = datetime.datetime.fromisoformat(created_at)
+            # print(created_at1)
+            date = str(created_at1.date())
+            time = created_at1.hour
+            # print(date, time)
+
+            current_dict = dict(tweet)
+            current_dict.update({"date": date, "time": time})
+            all_dicts.append(current_dict)
+
+        df = pd.DataFrame(all_dicts)
+        date_df = df.groupby(['date'], group_keys=True)['text'].count()
+        list_date_tweet_count = {'Date': date_df.keys().tolist(),
+                                 'Tweet count': date_df.values.tolist()}
+        # datetime_df = df.groupby(['date', 'time'])['text'].count()
+
+        new_df = pd.DataFrame(list_date_tweet_count)
+        final_date_tweet_count = new_df.values.tolist()
+        # print(datetime_df)
+
+        # print(len(all_dicts))
+        # print(created_at1)
+        # print(final_date_tweet_count)
+    return final_date_tweet_count
+
+
+# get tweet by date
+# TODO: fit it with sentiment and keyword
+def get_tweets_by_date(date):
+    data = show_all_tweets()
+    data1 = data["data"]
+    tweet_with_date = []
+
+    for tweet in data1:
+        tweet_datetime = tweet['created_at']
+        tweet_datetime1 = datetime.datetime.fromisoformat(tweet_datetime)
+        tweet_date = str(tweet_datetime1.date())
+        if date == tweet_date:
+            tweet_with_date.append(tweet)
+
+    if len(tweet_with_date) == 0:
+        tweet_display = {"No tweets available in the database on this date."}
+    # print(tweet_with_date)
+    else:
+        tweet_display = {"data": tweet_with_date}
+    return tweet_display
 
 
 # method to delete irrelevant tweets
 def delete_tweet_from_database(keyword):
     return []
+
+
+

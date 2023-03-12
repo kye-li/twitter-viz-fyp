@@ -142,7 +142,7 @@ def remove_links(text):
     return new_text
 
 
-# run tweet through google translate
+# run tweet through Google Translate
 # new dataframe, then read new dataframe to a new csv file
 
 def add_translations_to_data(file):

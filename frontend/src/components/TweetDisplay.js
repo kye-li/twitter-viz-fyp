@@ -15,6 +15,10 @@ const TweetDisplay = ({ tweetDisplayProp }) => {
         return colour;
     }
 
+    // method to turn edit_history_tweet_ids into digits ['123456789'] to 123456789
+    // pass it into the twitter url, allow user to click on link to view original tweet on twitter
+    // e.g. https://twitter.com/anyuser/status/541278904204668929
+
     return (
         <div>
             {tweetDisplayProp?.data?.map((p, i) => (

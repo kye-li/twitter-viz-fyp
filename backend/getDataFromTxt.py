@@ -66,7 +66,7 @@ def read_files(directory):
 # read_files(directory2)
 # print('post election tweets done')
 # read_files(directory3)
-# print('extra pre election tweets done')
+# print('extra pre-election tweets done')
 
 
 # method to remove duplicates
@@ -74,11 +74,10 @@ def read_files(directory):
 
 def remove_duplicates():
     tweet_dataframe = pd.read_csv('data/tweets.csv')
-    #print(tweet_dataframe)
+    # print(tweet_dataframe)
     tweet_dataframe.drop_duplicates(subset='text', keep='first', inplace=True)
-    #print(tweet_dataframe)
+    # print(tweet_dataframe)
     tweet_dataframe.to_csv('tweets.csv', index=False)
 
-#remove_duplicates()
+# remove_duplicates()
 # 11865 tweets left
-

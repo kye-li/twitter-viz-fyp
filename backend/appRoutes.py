@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 import requests
 import uvicorn
-import getAndStoreTweets
 import updateDashboard
 
 # TODO: error handling
@@ -11,10 +10,10 @@ BEARER_TOKEN = "AAAAAAAAAAAAAAAAAAAAAEdchgEAAAAAoMYohigl0ivRkDXA0Xbxm%2FC7BhM%3D
 app = FastAPI()
 
 
-@app.get("/sentiment-analysis")
-async def sentiment_analysis(keyword):
-    response = getAndStoreTweets.get_and_score_tweets(str(keyword))
-    return response
+# @app.get("/sentiment-analysis")
+# async def sentiment_analysis(keyword):
+#     response = getAndStoreTweets.get_and_score_tweets(str(keyword))
+#     return response
 
 
 @app.get("/show-all-tweets")
@@ -35,6 +34,12 @@ async def show_tweets_by_keyword(keyword):
     return response
 
 
+@app.get("/show-tweets-by-date")
+async def show_tweets_by_date(date):
+    response = updateDashboard.get_tweets_by_date(str(date))
+    return response
+
+
 @app.get("/pie-chart")
 async def pie_chart(keyword=''):
     response = updateDashboard.pie_chart_data(str(keyword))
@@ -44,6 +49,12 @@ async def pie_chart(keyword=''):
 @app.get("/word-cloud")
 async def show_word_cloud(keyword='', sentiment='all'):
     response = updateDashboard.show_word_frequency(str(keyword), str(sentiment))
+    return response
+
+
+@app.get("/line-chart")
+async def show_line_chart(keyword='', sentiment='all'):
+    response = updateDashboard.line_chart_input(str(keyword), str(sentiment))
     return response
 
 

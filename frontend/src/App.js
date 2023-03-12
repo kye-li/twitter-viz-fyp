@@ -8,6 +8,10 @@ import { SimpleGrid } from '@chakra-ui/react'
 // ref: https://chakra-ui.com/docs/components/simple-grid/usage
 import TweetDisplay from "./components/TweetDisplay";
 import WordCloud from "./components/WordCloud";
+import LineChart from "./components/LineChart";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+// ref: https://reactdatepicker.com/
 
 function App() {
     // const [posts, setPosts] = useState({});
@@ -19,6 +23,9 @@ function App() {
     const [searchText, setSearchText] = useState("Now showing dashboard for all tweets related " +
         "to Malaysia's 15th General Election.")
     const [topTenWords, setTopTenWords] = useState("")
+    const [lineChartData, setLineChartData] = useState([]);
+    const [lineChartStats, setLineChartStats] = useState('');
+    const [startDate, setStartDate] = useState('');
 
 
     const showAllTweets = async () => {
@@ -84,6 +91,7 @@ function App() {
             console.log("something messed up");
         } else if (data.length === 1) {
             alert(data);
+            setSentimentTweets({})
         }
         else {
             setSentimentTweets(data);
@@ -106,7 +114,12 @@ function App() {
             console.log("something messed up");
         } else if (typeof data === "string") {
             alert(data);
+            setSentimentTweets({})
             setSearchText("Dashboard is empty as there is no match for tweets containing keyword. " +
+                "Please enter a different keyword.")
+            setLineChartStats("No match for tweets containing keyword. " +
+            "Please enter a different keyword.")
+            setTopTenWords("No match for tweets containing keyword. " +
                 "Please enter a different keyword.")
         }
         else {
@@ -133,24 +146,77 @@ function App() {
         } else {
             setWordCloudData(data)
             console.log(data)
-            // data is an array of {text: '', value: }
-            let word;
-            let size;
-            let topTenString = '';
-            for(let i = 0; i < 10; i++){
-                word = data[i].text;
-                size = data[i].value;
-                topTenString += word + " (" + size + " words)" + ", ";
-            }
-            if (keyword===''){
-                setTopTenWords("Top 10 words for " + sentiment + " tweets in the database " +
-                    "are: " + "\n" + topTenString + ".");
-            }
-            else {
-                setTopTenWords("Top 10 words for " + sentiment + " tweets with the keyword: "
-                    + keyword + " are: " + "\n" + topTenString + ".");
+            if (data.length > 0) {
+                let word;
+                let size;
+                let topTenString = '';
+                for (let i = 0; i < 10; i++) {
+                    word = data[i].text;
+                    size = data[i].value;
+                    topTenString += word + " (" + size + " words)" + ", ";
+                }
+                if (keyword === '') {
+                    setTopTenWords("Top 10 words for " + sentiment + " tweets in the database " +
+                        "are: " + "\n" + topTenString + ".");
+                } else {
+                    setTopTenWords("Top 10 words for " + sentiment + " tweets with the keyword: "
+                        + keyword + " are: " + "\n" + topTenString + ".");
+                }
             }
         }
+    };
+
+
+    const updateLineChart = async (keyword, sentiment) => {
+        const response = await fetch(
+            "/line-chart?" +
+            new URLSearchParams({
+                keyword: keyword,
+                sentiment: sentiment
+            }), {
+                method: "get"
+            });
+
+        const data = await response.json()
+
+        if (!response.ok) {
+            console.log("something messed up");
+        } else {
+            setLineChartData(data);
+            console.log(data)
+            if (keyword === '') {
+                setLineChartStats("Tweet counts by date for " + sentiment + " tweets in the database.");
+            } else {
+                setLineChartStats("Tweet counts by date for " + sentiment + " tweets with the keyword: "
+                    + keyword + ".");
+            }
+        }
+    };
+
+    // ref: https://stackoverflow.com/questions/23593052/format-javascript-date-as-yyyy-mm-dd
+    const showTweetsByDate = async (date) => {
+        const response = await fetch(
+            "/show-tweets-by-date?" +
+            new URLSearchParams({
+                date: date.toISOString().split('T')[0],
+            }), {
+                method: "get"
+            });
+
+        const data = await response.json()
+
+        if (!response.ok) {
+            console.log("something messed up");
+        } else if (data.length === 1) {
+            alert(data);
+            setSentimentTweets({})
+        }
+        else {
+            setStartDate(date)
+            setSentimentTweets(data);
+            console.log(data)
+        }
+
     };
 
 
@@ -160,9 +226,11 @@ function App() {
             alert("Please enter a keyword to search.")
             setSentimentTweets({})
             setPieChartData([])
-            setPieChartStats("")
+            setPieChartStats("Please enter a keyword to search.")
+            setTopTenWords('Please enter a keyword to search.')
             setWordCloudData([])
             setSearchText("Dashboard is empty as no keyword is searched.")
+            setLineChartData([])
         } else {
             let value;
             value = searchInput;
@@ -172,18 +240,21 @@ function App() {
             getTweetsByKeyword({keyword: `${searchInput}`});
             updatePieChartByKeyword({keyword: `${searchInput}`});
             updateWordCloud(searchInput,'all');
+            updateLineChart(searchInput, 'all');
         }
     };
 
     const sentimentButton = (keyword, sentiment) => {
         getTweetsWithSentiment(keyword, sentiment);
+        updateLineChart(keyword, sentiment)
         updateWordCloud(keyword, sentiment);
     };
 
     useEffect(() => {
         updatePieChartByKeyword({keyword: ''});
         showAllTweets();
-        updateWordCloud('','all')
+        updateLineChart('', 'all');
+        updateWordCloud('','all');
     }, []);
 
         return (
@@ -244,9 +315,17 @@ function App() {
                             >
                                 Default Tweets
                             </Button>
+                            <Text fontWeight="bold">View Tweets by Date:</Text>
+                            <DatePicker
+                                showIcon
+                                dateFormat="yyyy-MM-dd"
+                                selected={startDate}
+                                onChange={(date) => showTweetsByDate(date)} />
                             <TweetDisplay tweetDisplayProp={sentimentTweets} />
                         </Container>
                         <Container bg="lavender" h="47vh" minW="100%" border="2px" overflow="scroll">
+                            <Text fontWeight={"bold"} fontSize={"medium"}>{lineChartStats}</Text>
+                            <LineChart lineChartProp={lineChartData}/>
                         </Container>
                         <Container bg="lavender" h="47vh" minW="100%" overflow="scroll" border="2px">
                             <Text fontWeight={"bold"} color={"purple"} fontStyle={"italic"}>{topTenWords}</Text>
