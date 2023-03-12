@@ -8,6 +8,9 @@
     <orderEntry type="library" name="d3.v4" level="application" />
     <orderEntry type="library" name="d3.layout.cloud" level="application" />
   </component>
+  <component name="PackageRequirementsSettings">
+    <option name="removeUnused" value="true" />
+  </component>
   <component name="PyDocumentationSettings">
     <option name="renderExternalDocumentation" value="true" />
   </component>

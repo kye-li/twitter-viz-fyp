@@ -32,8 +32,11 @@ function App() {
     const showAllTweets = async () => {
         const response = await fetch(
             "/show-all-tweets", {
-                method: "get"
-        });
+                method: "get",
+                headers: new Headers({
+                    "ngrok-skip-browser-warning": "69420",
+                })
+            });
         const data = await response.json()
 
         if (!response.ok) {
@@ -52,7 +55,10 @@ function App() {
             new URLSearchParams({
                 keyword: keyword,
             }), {
-                method: "get"
+                method: "get",
+                headers: new Headers({
+                    "ngrok-skip-browser-warning": "69420",
+                })
             });
 
         const data = await response.json()
@@ -92,7 +98,10 @@ function App() {
                 sentiment: sentiment,
                 date: date,
             }), {
-                method: "get"
+                method: "get",
+                headers: new Headers({
+                    "ngrok-skip-browser-warning": "69420",
+                })
             });
 
         const data = await response.json()
@@ -123,7 +132,10 @@ function App() {
             new URLSearchParams({
                 keyword: keyword,
             }), {
-                method: "get"
+                method: "get",
+                headers: new Headers({
+                    "ngrok-skip-browser-warning": "69420",
+                })
             });
 
         const data = await response.json()
@@ -156,7 +168,10 @@ function App() {
                 keyword: keyword,
                 sentiment: sentiment
             }), {
-                method: "get"
+                method: "get",
+                headers: new Headers({
+                    "ngrok-skip-browser-warning": "69420",
+                })
             });
 
         const data = await response.json()
@@ -194,7 +209,10 @@ function App() {
                 keyword: keyword,
                 sentiment: sentiment
             }), {
-                method: "get"
+                method: "get",
+                headers: new Headers({
+                    "ngrok-skip-browser-warning": "69420",
+                })
             });
 
         const data = await response.json()
