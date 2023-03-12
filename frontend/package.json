@@ -12,12 +12,14 @@
     "@testing-library/user-event": "^13.5.0",
     "bulma": "^0.9.4",
     "chart.js": "^4.2.1",
+    "faker": "^6.6.6",
     "framer-motion": "^10.0.0",
     "moment": "^2.29.4",
     "ngrok": "^4.3.3",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-d3-cloud": "^1.0.6",
+    "react-datepicker": "^4.10.0",
     "react-dom": "^18.2.0",
     "react-minimal-pie-chart": "^8.4.0",
     "react-scripts": "5.0.1",
@@ -48,5 +50,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://127.0.0.1:5049"
+  "proxy": "https://f4b3-82-132-217-127.eu.ngrok.io/"
 }
