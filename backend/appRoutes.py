@@ -5,15 +5,7 @@ import updateDashboard
 
 # TODO: error handling
 
-BEARER_TOKEN = "AAAAAAAAAAAAAAAAAAAAAEdchgEAAAAAoMYohigl0ivRkDXA0Xbxm%2FC7BhM%3D2RV4sBsPfRtOfRRASXHrv50t0It6RGRDnXmHCusBNUgACJMu8q"
-
 app = FastAPI()
-
-
-# @app.get("/sentiment-analysis")
-# async def sentiment_analysis(keyword):
-#     response = getAndStoreTweets.get_and_score_tweets(str(keyword))
-#     return response
 
 
 @app.get("/show-all-tweets")
