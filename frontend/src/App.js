@@ -1,6 +1,6 @@
 import * as React from "react";
 import {useState, useEffect} from "react";
-import {Button, ChakraProvider, Container, Image, Text} from "@chakra-ui/react";
+import {Button, ChakraProvider, Container, Text} from "@chakra-ui/react";
 // import {ArcElement, Chart as ChartJS, Legend, Tooltip} from 'chart.js';
 import './App.css';
 import PieChart from "./components/PieChart";
@@ -28,10 +28,12 @@ function App() {
     const [lineChartStats, setLineChartStats] = useState('');
     const [startDate, setStartDate] = useState(null);
 
+    // making sure fetching from correct URL in production
+    const baseURL = process.env.NODE_ENV === 'development' ? '' : 'https://f4b3-82-132-217-127.eu.ngrok.io/'
 
     const showAllTweets = async () => {
         const response = await fetch(
-            "/show-all-tweets", {
+            `${baseURL}/show-all-tweets`, {
                 method: "get",
                 headers: new Headers({
                     "ngrok-skip-browser-warning": "69420",
