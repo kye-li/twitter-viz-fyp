@@ -29,7 +29,7 @@ function App() {
     const [startDate, setStartDate] = useState(null);
 
     // making sure fetching from correct URL in production
-    const baseURL = process.env.NODE_ENV === 'development' ? '' : 'https://f4b3-82-132-217-127.eu.ngrok.io/'
+    const baseURL = process.env.NODE_ENV === 'development' ? '' : 'https://f4b3-82-132-217-127.eu.ngrok.io'
 
     const showAllTweets = async () => {
         const response = await fetch(
