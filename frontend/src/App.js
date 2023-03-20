@@ -37,6 +37,7 @@ function App() {
                 method: "get",
                 headers: new Headers({
                     "ngrok-skip-browser-warning": "69420",
+                    "Access-Control-Allow-Origin": "https://twitter-viz-fyp.vercel.app"
                 })
             });
         const data = await response.json()
