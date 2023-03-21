@@ -36,8 +36,11 @@ function App() {
         const response = await fetch(
             `${baseURL}/show-all-tweets`, {
                 method: "get",
+                mode: "cors",
+                credentials: "include",
                 headers: new Headers({
-                    "ngrok-skip-browser-warning": "69420"
+                    "ngrok-skip-browser-warning": "69420",
+                    "Origin": origin,
                 })
             });
         const data = await response.json()
@@ -54,16 +57,16 @@ function App() {
 
     const updatePieChartByKeyword = async ({keyword}) => {
         const response = await fetch(
-            "/pie-chart?" +
+            `${baseURL}/pie-chart?` +
             new URLSearchParams({
                 keyword: keyword,
             }), {
                 method: "get",
-                mode: "cors",
+                mode: "no-cors",
                 credentials: "include",
                 headers: new Headers({
                     "ngrok-skip-browser-warning": "69420",
-                    "Origin": origin
+                    "Origin": origin,
                 })
             });
 
