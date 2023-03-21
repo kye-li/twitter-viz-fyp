@@ -37,7 +37,7 @@ function App() {
         const response = await fetch(
             `${baseURL}/show-all-tweets`, {
                 method: "get",
-                mode: "same-origin",
+                mode: mode,
                 headers: new Headers({
                     "ngrok-skip-browser-warning": "69420",
                 })
@@ -67,8 +67,10 @@ function App() {
                 })
             });
 
+        console.log(response);
 
-        const data = await response.json().catch();
+
+        const data = await response.json();
 
 
         if (!response.ok) {
