@@ -9,21 +9,6 @@ app = FastAPI()
 
 # ref: https://fastapi.tiangolo.com/tutorial/cors/
 
-origins = [
-    "http://127.0.0.1:5049",
-    "http://localhost:3000",
-    "https://twitter-viz-fyp.vercel.app",
-    "https://f4b3-82-132-217-127.eu.ngrok.io"
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 
 @app.get("/show-all-tweets")
 async def show_all_tweets(file='data/tweets_with_translations.csv'):
@@ -66,6 +51,20 @@ async def show_line_chart(keyword='', sentiment='all'):
     response = updateDashboard.line_chart_input(str(keyword), str(sentiment))
     return response
 
+origins = [
+    "http://127.0.0.1:5049",
+    "http://localhost:3000",
+    "https://twitter-viz-fyp.vercel.app",
+    "https://f4b3-82-132-217-127.eu.ngrok.io"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=5049)
