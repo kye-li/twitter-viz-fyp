@@ -11,7 +11,8 @@ app = FastAPI()
 
 origins = [
     "http://localhost:3000/",
-    "https://twitter-viz-fyp.vercel.app/"
+    "https://twitter-viz-fyp.vercel.app/",
+    "https://f4b3-82-132-217-127.eu.ngrok.io/"
 ]
 
 app.add_middleware(
