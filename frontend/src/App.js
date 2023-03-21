@@ -36,8 +36,7 @@ function App() {
             `${baseURL}/show-all-tweets`, {
                 method: "get",
                 headers: new Headers({
-                    "ngrok-skip-browser-warning": "69420",
-                    "Access-Control-Allow-Origin": "https://twitter-viz-fyp.vercel.app"
+                    "ngrok-skip-browser-warning": "69420"
                 })
             });
         const data = await response.json()
