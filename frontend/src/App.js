@@ -82,16 +82,21 @@ function App() {
         } else {
             setPieChartData(data);
             console.log(data)
-            let total, pos, neu, neg, stats;
+            let total, pos, neu, neg, posPer, neuPer, negPer, stats;
             total = data[0] + data[1] + data[2];
             pos = data[0];
             neu = data[1];
             neg = data[2];
 
-            stats = "Total tweets: " + String(total) + "\n"
-                + "Positive: " + String(pos) + "\n"
-                + "Neutral: " + String(neu) + "\n"
-                + "Negative: " + String(neg);
+            posPer = Math.round((pos/total)*100)
+            neuPer = Math.round((neu/total)*100)
+            negPer = Math.round((neg/total)*100)
+
+            stats = "Total tweets: " + String(total) + " | " + "\n"
+                + "Positive: " + String(pos) + ", " + String(posPer) + "%" + " | " + "\n"
+                + "Neutral: " + String(neu) + ", " + String(neuPer) + "%" + " | " + "\n"
+                + "Negative: " + String(neg) + ", " + String(negPer) + "%";
+
             setPieChartStats(stats)
         }
     };
@@ -257,33 +262,6 @@ function App() {
         }
     };
 
-    // ref: https://stackoverflow.com/questions/23593052/format-javascript-date-as-yyyy-mm-dd
-    // const showTweetsByDate = async (date) => {
-    //     const response = await fetch(
-    //         "/show-tweets-by-date?" +
-    //         new URLSearchParams({
-    //             date: date.toISOString().split('T')[0],
-    //         }), {
-    //             method: "get"
-    //         });
-    //
-    //     const data = await response.json()
-    //
-    //     if (!response.ok) {
-    //         console.log("something messed up");
-    //     } else if (data.length === 1) {
-    //         alert(data);
-    //         setSentimentTweets({})
-    //     }
-    //     else {
-    //         setStartDate(date)
-    //         setSentimentTweets(data);
-    //         console.log(data)
-    //     }
-    //
-    // };
-    //
-
     const enterSearch = (e) => {
         e.preventDefault();
         if (searchInput === '') {
@@ -342,21 +320,16 @@ function App() {
                     <SimpleGrid columns={2} spacing={"0vh"} h="95vh" padding={1}>
                         <Container bg="lavender" h="47vh" minW="100%" border="2px" overflow="scroll">
                             <form onSubmit={enterSearch}>
-                                <label><b>Enter your search word here: </b></label>
-                                <input
-                                    type="text"
-                                    value={searchInput}
-                                    onChange={(e) => setSearchInput(e.target.value)}
-                                />
-                                <input type="submit" />
-                            </form>
+                                    <label><b>Enter your search word here: </b></label>
+                                    <input
+                                        type="text"
+                                        value={searchInput}
+                                        onChange={(e) => setSearchInput(e.target.value)}
+                                    />
+                                    <input type="submit" />
+                                </form>
                             <Text fontSize={"medium"} border={"2px"}>{searchText}</Text>
-                            {/*<Button fontSize={"xs"}*/}
-                            {/*    onClick={() =>updatePieChartByKeyword({keyword: ''})}*/}
-                            {/*>*/}
-                            {/*    Default Pie Chart*/}
-                            {/*</Button>*/}
-                            <Text fontWeight={"bold"} fontSize={"medium"}>{pieChartStats}</Text>
+                            <Text fontWeight={"bold"} fontSize={"medium"} color={"brown"}>{pieChartStats}</Text>
                             <PieChart pieChartProp={pieChartData} />
                         </Container>
                         <Container
@@ -368,18 +341,27 @@ function App() {
                         >
                             <Button fontSize={"xs"}
                                     position={"sticky"}
+                                    margin={"1"}
+                                    borderColor={"black"}
+                                    border={"1px"}
                                     onClick={() => sentimentButton(searchInput, 'positive', startDate)}
                             >
                                 Show Positive Only
                             </Button>
                             <Button fontSize={"xs"}
                                     position={"sticky"}
+                                    margin={"1"}
+                                    borderColor={"black"}
+                                    border={"1px"}
                                     onClick={() => sentimentButton(searchInput,'negative', startDate)}
                             >
                                 Show Negative Only
                             </Button>
                             <Button fontSize={"xs"}
                                     position={"sticky"}
+                                    margin={"1"}
+                                    borderColor={"black"}
+                                    border={"1px"}
                                     onClick={() => sentimentButton(searchInput,'neutral', startDate)}
                             >
                                 Show Neutral Only
@@ -398,32 +380,22 @@ function App() {
                                 onChange={(date) => setStartDate(date)}
                             />
                             <Button fontSize={"xs"}
+                                    borderColor={"black"}
+                                    border={"1px"}
                                     onClick={() => sentimentButton(searchInput,'all', startDate)}
                             >
                                 Show All Tweets By Date
                             </Button>
-                            <Text fontWeight="bold">{tweetDisplayText}</Text>
+                            <Text fontWeight="bold" color={"brown"}>{tweetDisplayText}</Text>
                             <TweetDisplay tweetDisplayProp={sentimentTweets} />
                         </Container>
                         <Container bg="lavender" h="47vh" minW="100%" border="2px" overflow="scroll">
-                            <Text fontWeight={"bold"} fontSize={"medium"}>{lineChartStats}</Text>
+                            <Text fontWeight={"bold"} fontSize={"medium"} color={"brown"}>{lineChartStats}</Text>
                             <LineChart lineChartProp={lineChartData}/>
                         </Container>
                         <Container bg="lavender" h="47vh" minW="100%" overflow="scroll" border="2px">
                             <Text fontWeight={"bold"} color={"purple"} fontStyle={"italic"}>{topTenWords}</Text>
                             <WordCloud wordCloudProp={wordCloudData}/>
-                            {/*<Button*/}
-                            {/*    onClick={() => updateWordCloud(`${searchInput}`)}*/}
-
-                            {/*>*/}
-                            {/*    Update Word Cloud*/}
-                            {/*</Button>*/}
-                            {/*<Button fontSize={"xs"}*/}
-                            {/*    onClick={() => updateWordCloud('', 'all')}*/}
-
-                            {/*>*/}
-                            {/*    Default Word Cloud*/}
-                            {/*</Button>*/}
                         </Container>
                     </SimpleGrid>
                 </Container>
