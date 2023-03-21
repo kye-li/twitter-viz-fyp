@@ -29,6 +29,8 @@ function App() {
     const [startDate, setStartDate] = useState(null);
 
     // making sure fetching from correct URL in production
+    //ref: https://stackoverflow.com/questions/45847813/react-native-fetch-api-url-in-development-and-productive-mode
+
     const baseURL = process.env.NODE_ENV === 'development' ? '' : 'https://f4b3-82-132-217-127.eu.ngrok.io'
     const origin = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://twitter-viz-fyp.vercel.app/'
     const mode = process.env.NODE_ENV === 'development' ? "same-origin" : "cors"
@@ -349,11 +351,11 @@ function App() {
                                 <input type="submit" />
                             </form>
                             <Text fontSize={"medium"} border={"2px"}>{searchText}</Text>
-                            <Button fontSize={"xs"}
-                                onClick={() =>updatePieChartByKeyword({keyword: ''})}
-                            >
-                                Default Pie Chart
-                            </Button>
+                            {/*<Button fontSize={"xs"}*/}
+                            {/*    onClick={() =>updatePieChartByKeyword({keyword: ''})}*/}
+                            {/*>*/}
+                            {/*    Default Pie Chart*/}
+                            {/*</Button>*/}
                             <Text fontWeight={"bold"} fontSize={"medium"}>{pieChartStats}</Text>
                             <PieChart pieChartProp={pieChartData} />
                         </Container>
@@ -382,12 +384,12 @@ function App() {
                             >
                                 Show Neutral Only
                             </Button>
-                            <Button fontSize={"xs"}
-                                    position={"sticky"}
-                                    onClick={() => showAllTweets()}
-                            >
-                                Default Tweets
-                            </Button>
+                            {/*<Button fontSize={"xs"}*/}
+                            {/*        position={"sticky"}*/}
+                            {/*        onClick={() => showAllTweets()}*/}
+                            {/*>*/}
+                            {/*    Default Tweets*/}
+                            {/*</Button>*/}
                             <Text fontWeight="bold">View Tweets by Date:</Text>
                             <DatePicker
                                 showIcon
@@ -416,12 +418,12 @@ function App() {
                             {/*>*/}
                             {/*    Update Word Cloud*/}
                             {/*</Button>*/}
-                            <Button fontSize={"xs"}
-                                onClick={() => updateWordCloud('', 'all')}
+                            {/*<Button fontSize={"xs"}*/}
+                            {/*    onClick={() => updateWordCloud('', 'all')}*/}
 
-                            >
-                                Default Word Cloud
-                            </Button>
+                            {/*>*/}
+                            {/*    Default Word Cloud*/}
+                            {/*</Button>*/}
                         </Container>
                     </SimpleGrid>
                 </Container>
