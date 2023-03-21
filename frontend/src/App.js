@@ -30,17 +30,16 @@ function App() {
 
     // making sure fetching from correct URL in production
     const baseURL = process.env.NODE_ENV === 'development' ? '' : 'https://f4b3-82-132-217-127.eu.ngrok.io'
-    const origin = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://twitter-viz-fyp.vercel.app'
+    // const origin = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://twitter-viz-fyp.vercel.app'
+    const mode = process.env.NODE_ENV === 'development' ? "same-origin" : "no-cors"
 
     const showAllTweets = async () => {
         const response = await fetch(
             `${baseURL}/show-all-tweets`, {
                 method: "get",
-                mode: "cors",
-                credentials: "include",
+                mode: "no-cors",
                 headers: new Headers({
                     "ngrok-skip-browser-warning": "69420",
-                    "Origin": origin,
                 })
             });
         const data = await response.json()
@@ -61,12 +60,10 @@ function App() {
             new URLSearchParams({
                 keyword: keyword,
             }), {
+                mode: mode,
                 method: "get",
-                mode: "no-cors",
-                credentials: "include",
                 headers: new Headers({
                     "ngrok-skip-browser-warning": "69420",
-                    "Origin": origin,
                 })
             });
 

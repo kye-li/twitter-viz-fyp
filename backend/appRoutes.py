@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+# from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import updateDashboard
 
@@ -9,19 +9,19 @@ app = FastAPI()
 
 # ref: https://fastapi.tiangolo.com/tutorial/cors/
 
-origins = [
-    "http://localhost:3000/",
-    "https://twitter-viz-fyp.vercel.app/",
-    "https://f4b3-82-132-217-127.eu.ngrok.io/"
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# origins = [
+#     "http://localhost:3000/",
+#     "https://twitter-viz-fyp.vercel.app/",
+#     "https://f4b3-82-132-217-127.eu.ngrok.io/"
+# ]
+#
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 
 @app.get("/show-all-tweets")
