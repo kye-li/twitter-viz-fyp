@@ -30,7 +30,7 @@ function App() {
 
     // making sure fetching from correct URL in production
     const baseURL = process.env.NODE_ENV === 'development' ? '' : 'https://f4b3-82-132-217-127.eu.ngrok.io'
-    // const origin = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://twitter-viz-fyp.vercel.app'
+    const origin = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://twitter-viz-fyp.vercel.app'
     const mode = process.env.NODE_ENV === 'development' ? "same-origin" : "cors"
 
     const showAllTweets = async () => {
@@ -64,6 +64,9 @@ function App() {
                 method: "get",
                 headers: new Headers({
                     "ngrok-skip-browser-warning": "69420",
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Origin": origin
                 })
             });
 
