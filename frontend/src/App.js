@@ -61,6 +61,7 @@ function App() {
                 keyword: keyword,
             }), {
                 mode: mode,
+                credentials: "include",
                 method: "get",
                 headers: new Headers({
                     "ngrok-skip-browser-warning": "69420",
