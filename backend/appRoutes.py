@@ -10,9 +10,10 @@ app = FastAPI()
 # ref: https://fastapi.tiangolo.com/tutorial/cors/
 
 origins = [
-    "http://localhost:3000/",
-    "https://twitter-viz-fyp.vercel.app/",
-    "https://f4b3-82-132-217-127.eu.ngrok.io/"
+    "http://127.0.0.1:5049",
+    "http://localhost:3000",
+    "https://twitter-viz-fyp.vercel.app",
+    "https://f4b3-82-132-217-127.eu.ngrok.io"
 ]
 
 app.add_middleware(

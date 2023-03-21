@@ -65,8 +65,6 @@ function App() {
                 method: "get",
                 headers: new Headers({
                     "ngrok-skip-browser-warning": "69420",
-                    "Content-Type": "application/json",
-                    "Accept": "application/json",
                     "Origin": origin
                 })
             });
