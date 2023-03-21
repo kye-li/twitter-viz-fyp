@@ -1,13 +1,15 @@
 from fastapi import FastAPI
-from starlette.middleware.cors import CORSMiddleware
-from starlette.middleware import Middleware
-# from fastapi.middleware.cors import CORSMiddleware
+# from starlette.middleware.cors import CORSMiddleware
+# from starlette.middleware import Middleware
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import updateDashboard
 
 # TODO: error handling
 
 # ref: https://fastapi.tiangolo.com/tutorial/cors/
+
+app = FastAPI()
 
 origins = [
     "http://127.0.0.1:5049",
@@ -20,23 +22,23 @@ origins = [
     "https://f4b3-82-132-217-127.eu.ngrok.io/"
 ]
 
-middleware = [
-    Middleware(CORSMiddleware,
-               allow_origins=origins,
-               allow_credentials=True,
-               allow_methods=["*"],
-               allow_headers=["*"]
-               )
-]
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=origins,
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
+# middleware = [
+#     Middleware(CORSMiddleware,
+#                allow_origins=origins,
+#                allow_credentials=True,
+#                allow_methods=["*"],
+#                allow_headers=["*"]
+#                )
+# ]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-app = FastAPI(middleware=middleware)
+# app = FastAPI(middleware=middleware)
 
 
 @app.get("/show-all-tweets")
