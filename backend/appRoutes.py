@@ -1,6 +1,4 @@
 from fastapi import FastAPI
-# from starlette.middleware.cors import CORSMiddleware
-# from starlette.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import updateDashboard
@@ -22,14 +20,7 @@ origins = [
     "https://f4b3-82-132-217-127.eu.ngrok.io/"
 ]
 
-# middleware = [
-#     Middleware(CORSMiddleware,
-#                allow_origins=origins,
-#                allow_credentials=True,
-#                allow_methods=["*"],
-#                allow_headers=["*"]
-#                )
-# ]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -37,8 +28,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# app = FastAPI(middleware=middleware)
 
 
 @app.get("/show-all-tweets")

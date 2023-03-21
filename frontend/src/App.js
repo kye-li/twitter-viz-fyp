@@ -36,13 +36,16 @@ function App() {
     const showAllTweets = async () => {
         const response = await fetch(
             `${baseURL}/show-all-tweets`, {
-                method: "get",
                 mode: mode,
+                credentials: "include",
+                method: "get",
                 headers: new Headers({
                     "ngrok-skip-browser-warning": "69420",
+                    "Origin": origin
                 })
             });
-        const data = await response.json()
+
+        const data = await response.json();
 
         if (!response.ok) {
             console.log("something messed up");
@@ -68,9 +71,6 @@ function App() {
                     "Origin": origin
                 })
             });
-
-        console.log(response);
-
 
         const data = await response.json();
 
@@ -104,19 +104,22 @@ function App() {
         }
 
         const response = await fetch(
-            "/show-tweets-by-sentiment?" +
+            `${baseURL}/show-tweets-by-sentiment?` +
             new URLSearchParams({
                 keyword: keyword,
                 sentiment: sentiment,
                 date: date,
             }), {
+                mode: mode,
+                credentials: "include",
                 method: "get",
                 headers: new Headers({
                     "ngrok-skip-browser-warning": "69420",
+                    "Origin": origin
                 })
             });
 
-        const data = await response.json()
+        const data = await response.json();
 
         if (!response.ok) {
             console.log("something messed up");
@@ -140,17 +143,20 @@ function App() {
 
     const getTweetsByKeyword = async ({keyword}) => {
         const response = await fetch(
-            "/show-tweets-by-keyword?" +
+            `${baseURL}/show-tweets-by-keyword?` +
             new URLSearchParams({
                 keyword: keyword,
             }), {
+                mode: mode,
+                credentials: "include",
                 method: "get",
                 headers: new Headers({
                     "ngrok-skip-browser-warning": "69420",
+                    "Origin": origin
                 })
             });
 
-        const data = await response.json()
+        const data = await response.json();
 
         if (!response.ok) {
             console.log("something messed up");
@@ -175,18 +181,21 @@ function App() {
 
     const updateWordCloud = async (keyword, sentiment) => {
         const response = await fetch(
-            "/word-cloud?" +
+            `${baseURL}/word-cloud?` +
             new URLSearchParams({
                 keyword: keyword,
                 sentiment: sentiment
             }), {
+                mode: mode,
+                credentials: "include",
                 method: "get",
                 headers: new Headers({
                     "ngrok-skip-browser-warning": "69420",
+                    "Origin": origin
                 })
             });
 
-        const data = await response.json()
+        const data = await response.json();
 
         if (!response.ok) {
             console.log("something messed up");
@@ -216,18 +225,21 @@ function App() {
 
     const updateLineChart = async (keyword, sentiment) => {
         const response = await fetch(
-            "/line-chart?" +
+            `${baseURL}/line-chart?` +
             new URLSearchParams({
                 keyword: keyword,
                 sentiment: sentiment
             }), {
+                mode: mode,
+                credentials: "include",
                 method: "get",
                 headers: new Headers({
                     "ngrok-skip-browser-warning": "69420",
+                    "Origin": origin
                 })
             });
 
-        const data = await response.json()
+        const data = await response.json();
 
         if (!response.ok) {
             console.log("something messed up");
