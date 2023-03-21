@@ -37,7 +37,7 @@ function App() {
         const response = await fetch(
             `${baseURL}/show-all-tweets`, {
                 method: "get",
-                mode: "no-cors",
+                mode: "same-origin",
                 headers: new Headers({
                     "ngrok-skip-browser-warning": "69420",
                 })
@@ -67,7 +67,9 @@ function App() {
                 })
             });
 
-        const data = await response.json()
+
+        const data = await response.json().catch();
+
 
         if (!response.ok) {
             console.log("something messed up");
