@@ -61,5 +61,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://f4b3-82-132-217-127.eu.ngrok.io/"
+  "proxy": "http://127.0.0.1:5049"
 }
