@@ -34,6 +34,6 @@ const PieChart = ({ pieChartProp }) => {
     return (
         <Pie data={pie_data}/>
     );
-}
+};
 
 export default PieChart;

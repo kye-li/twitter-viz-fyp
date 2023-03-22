@@ -1,4 +1,3 @@
-import json
 import os
 import csv
 import re
@@ -327,7 +326,7 @@ def show_word_frequency(keyword='', sentiment='all'):
         # print(final_list)
         # print(len(final_list))
         counter = Counter(final_list)
-        most_occur = counter.most_common(50)
+        most_occur = counter.most_common(30)
 
         for i in most_occur:
             word_and_size = {"text": i[0], "value": i[1]}

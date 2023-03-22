@@ -1,4 +1,4 @@
-import {Box, Button, Text} from "@chakra-ui/react";
+import {Box, Text} from "@chakra-ui/react";
 import * as React from "react";
 
 const TweetDisplay = ({ tweetDisplayProp }) => {
@@ -30,6 +30,6 @@ const TweetDisplay = ({ tweetDisplayProp }) => {
         </div>
     );
 
-}
+};
 
 export default TweetDisplay;

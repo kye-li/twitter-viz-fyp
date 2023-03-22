@@ -16,16 +16,16 @@ import "react-datepicker/dist/react-datepicker.css";
 function App() {
     // const [posts, setPosts] = useState({});
     const [sentimentTweets, setSentimentTweets] = useState({});
-    const [tweetDisplayText, setTweetDisplayText] = useState("Now showing all tweets in database.")
+    const [tweetDisplayText, setTweetDisplayText] = useState("Loading tweets...")
     const [searchInput, setSearchInput] = useState("");
     const [pieChartData, setPieChartData] = useState([]);
     const [wordCloudData, setWordCloudData] = useState([])
-    const [pieChartStats, setPieChartStats] = useState("");
+    const [pieChartStats, setPieChartStats] = useState("Loading pie chart...");
     const [searchText, setSearchText] = useState("Now showing dashboard for all tweets related " +
         "to Malaysia's 15th General Election.")
-    const [topTenWords, setTopTenWords] = useState("")
+    const [topTenWords, setTopTenWords] = useState("Loading word cloud and top ten words display...")
     const [lineChartData, setLineChartData] = useState([]);
-    const [lineChartStats, setLineChartStats] = useState('');
+    const [lineChartStats, setLineChartStats] = useState('Loading line chart...');
     const [startDate, setStartDate] = useState(null);
 
     // making sure fetching from correct URL in production
@@ -92,7 +92,7 @@ function App() {
             neuPer = Math.round((neu/total)*100)
             negPer = Math.round((neg/total)*100)
 
-            stats = "Total tweets: " + String(total) + " | " + "\n"
+            stats = "Now showing Pie Chart for keyword: "+ keyword + " -> Total tweets: " + String(total) + " | " + "\n"
                 + "Positive: " + String(pos) + ", " + String(posPer) + "%" + " | " + "\n"
                 + "Neutral: " + String(neu) + ", " + String(neuPer) + "%" + " | " + "\n"
                 + "Negative: " + String(neg) + ", " + String(negPer) + "%";
@@ -278,37 +278,71 @@ function App() {
             let value;
             value = searchInput;
             setSearchText("Now showing dashboard for keyword: " + value);
-            // alert(`The search value you entered was : ${searchInput}`);
-            // getTweets({ query: `${searchInput}` });
-            getTweetsByKeyword({keyword: `${searchInput}`});
-            console.log("enterSearch: gettweetsbykeyword")
+            setTweetDisplayText("Loading tweets...");
+            setSentimentTweets([]);
+            setPieChartStats("Loading pie chart...");
+            setPieChartData([]);
+            setLineChartStats("Loading line chart...")
+            setLineChartData([]);
+            setTopTenWords("Loading word cloud and top ten words...");
+            setWordCloudData([]);
             updatePieChartByKeyword({keyword: `${searchInput}`});
             console.log("enterSearch: updatepiechartbykeyword")
-            updateWordCloud(searchInput,'all');
-            console.log("enterSearch: updatewordcloud")
             updateLineChart(searchInput, 'all');
             console.log("enterSearch: updatelinechart")
+            getTweetsByKeyword({keyword: `${searchInput}`});
+            console.log("enterSearch: gettweetsbykeyword")
+            updateWordCloud(searchInput,'all');
+            console.log("enterSearch: updatewordcloud")
         }
     };
 
     const sentimentButton = (keyword, sentiment, date) => {
-        getTweetsWithSentiment(keyword, sentiment, date);
-        console.log("sentimentButton: gettweetswithsentiment")
+        setTweetDisplayText("Loading tweets...");
+        setSentimentTweets([]);
+        setLineChartStats("Loading line chart...");
+        setLineChartData([]);
+        setTopTenWords("Loading word cloud and top ten words display...");
+        setWordCloudData([]);
         updateLineChart(keyword, sentiment)
         console.log("sentimentButton: updatelinechart")
+        getTweetsWithSentiment(keyword, sentiment, date);
+        console.log("sentimentButton: gettweetswithsentiment")
         updateWordCloud(keyword, sentiment);
         console.log("sentimentButton: updatewordcloud")
+    };
+
+    const resetButton = () => {
+        setSearchInput('');
+        setSearchText("Now showing dashboard for all tweets related to Malaysia's 15th General Election.");
+        setStartDate(null);
+        setTweetDisplayText("Loading tweets...");
+        setSentimentTweets([]);
+        setPieChartStats("Loading pie chart...");
+        setPieChartData([]);
+        setLineChartStats("Loading line chart...")
+        setLineChartData([]);
+        setTopTenWords("Loading word cloud and top ten words...");
+        setWordCloudData([]);
+        updatePieChartByKeyword({keyword: ''});
+        console.log("reset: piechartupdate")
+        updateLineChart('', 'all');
+        console.log("reset: linechartupdate")
+        updateWordCloud('','all');
+        console.log("reset: wordcloudupdate")
+        showAllTweets();
+        console.log("reset: showalltweets")
     };
 
     useEffect(() => {
         updatePieChartByKeyword({keyword: ''});
         console.log("useEffect: piechartupdate")
-        showAllTweets();
-        console.log("useEffect: showalltweets")
         updateLineChart('', 'all');
         console.log("useEffect: linechartupdate")
         updateWordCloud('','all');
         console.log("useEffect: wordcloudupdate")
+        showAllTweets();
+        console.log("useEffect: showalltweets")
     }, []);
 
         return (
@@ -327,7 +361,7 @@ function App() {
                                         onChange={(e) => setSearchInput(e.target.value)}
                                     />
                                     <input type="submit" />
-                                </form>
+                            </form>
                             <Text fontSize={"medium"} border={"2px"}>{searchText}</Text>
                             <Text fontWeight={"bold"} fontSize={"medium"} color={"brown"}>{pieChartStats}</Text>
                             <PieChart pieChartProp={pieChartData} />
@@ -378,6 +412,7 @@ function App() {
                                 dateFormat="yyyy-MM-dd"
                                 selected={startDate}
                                 onChange={(date) => setStartDate(date)}
+                                isClearable
                             />
                             <Button fontSize={"xs"}
                                     borderColor={"black"}
@@ -385,6 +420,17 @@ function App() {
                                     onClick={() => sentimentButton(searchInput,'all', startDate)}
                             >
                                 Show All Tweets By Date
+                            </Button>
+                            <Button fontSize={"xs"}
+                                    position={"sticky"}
+                                    margin={"1"}
+                                    borderColor={"black"}
+                                    border={"1px"}
+                                    backgroundColor={"deeppink"}
+                                    textColor={"white"}
+                                    onClick={() => resetButton()}
+                            >
+                                Reset Dashboard
                             </Button>
                             <Text fontWeight="bold" color={"brown"}>{tweetDisplayText}</Text>
                             <TweetDisplay tweetDisplayProp={sentimentTweets} />
