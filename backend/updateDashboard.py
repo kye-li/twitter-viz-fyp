@@ -14,6 +14,7 @@ import pandas as pd
 nltk.download('punkt')
 nltk.download("wordnet")
 nltk.download("omw-1.4")
+nltk.download('stopwords')
 
 # ps = PorterStemmer()
 
@@ -23,6 +24,7 @@ stemmer = factory.create_stemmer()
 
 a_pos_list, a_neg_list, a_neu_list = [], [], []
 k_pos_list, k_neg_list, k_neu_list = [], [], []
+wck_pos_list, wck_neg_list, wck_neu_list = [], [], []
 s_pos_list, s_neg_list, s_neu_list = [], [], []
 d_pos_list, d_neg_list, d_neu_list = [], [], []
 
@@ -119,6 +121,42 @@ def show_tweets_by_keyword(keyword):
     # print(response)
     # print(len(response))
     return response
+
+# for word cloud use:
+def wc_show_tweets_by_keyword(keyword):
+    global wck_pos_list, wck_neu_list, wck_neg_list
+    tweet_list = []
+    wck_pos_list.clear()
+    wck_neu_list.clear()
+    wck_neg_list.clear()
+    keyword = str.lower(keyword)
+    data = show_all_tweets('data/for_word_cloud.csv')
+    data1 = data["data"]
+
+    for tweet in data1:
+        text = str.lower(tweet["text"])
+        x = re.findall(keyword, text)
+        # if x is not an empty list, meaning there's a match, append tweet to tweet_list
+        if x:
+            tweet_list.append(tweet)
+    if tweet_list:
+        response = {"data": tweet_list}
+
+        for tweet in tweet_list:
+            overall_sentiment = tweet['overall_sentiment']
+
+            if overall_sentiment == "positive":
+                wck_pos_list.append(tweet)
+            elif overall_sentiment == "negative":
+                wck_neg_list.append(tweet)
+            elif overall_sentiment == "neutral":
+                wck_neu_list.append(tweet)
+    else:
+        response = 'No match, please enter a different keyword.'
+    # print(response)
+    # print(len(response))
+    return response
+
 
 
 # method to remove brackets and single quotes from string ['1593771032036286465']
@@ -254,19 +292,20 @@ def show_tweets_by_sentiment(keyword='', sentiment='all', date=''):
 def show_word_frequency(keyword='', sentiment='all'):
     global most_occur
     initial_list, final_list, word_cloud_input = [], [], []
+    final_final_list = []
 
     data1 = []
     if keyword == '':
-        data = show_all_tweets()
+        data = show_all_tweets('data/for_word_cloud.csv')
         wc_pos_list = a_pos_list
         wc_neu_list = a_neu_list
         wc_neg_list = a_neg_list
         # print('showing word frequency for all tweets')
     else:
-        data = show_tweets_by_keyword(keyword)
-        wc_pos_list = k_pos_list
-        wc_neu_list = k_neu_list
-        wc_neg_list = k_neg_list
+        data = wc_show_tweets_by_keyword(keyword)
+        wc_pos_list = wck_pos_list
+        wc_neu_list = wck_neu_list
+        wc_neg_list = wck_neg_list
         # print('showing word frequency for tweets with keyword: ', keyword)
 
     if isinstance(data, str):  # check if data is an error message (which is a string)
@@ -307,25 +346,15 @@ def show_word_frequency(keyword='', sentiment='all'):
             # get full list of tweets
 
         for tweet in data1:
-            tweet_text = tweet["text"]
-            # for each tweet, clean tweet
-            lemmatized_words = clean_text(tweet_text)
-            # lemmatized_words is a list of words from the tweet
-            eng_stopwords = stopwords.words('english')
-            ind_stopwords = stopwords.words('indonesian')
-            for word in lemmatized_words:
-                initial_list.append(word)
-                # a list to check how many words initially without excluding stopwords
-                if word not in eng_stopwords and word not in ind_stopwords and not word.isnumeric():
-                    final_list.append(word)
-                    # a list to check how many words after excluding stopwords and numbers
-                    # in both eng and indonesian (similar to malay)
+            # ref: https://www.geeksforgeeks.org/python-convert-a-string-representation-of-list-into-list/
 
-        # print(initial_list)
-        # print(len(initial_list))
-        # print(final_list)
-        # print(len(final_list))
-        counter = Counter(final_list)
+            list_of_words = str(tweet["cleaned_text"])
+            words1 = list_of_words.strip('][')
+            words = re.sub("[']", "", words1).split(', ')
+            for word in words:
+                final_final_list.append(word)
+
+        counter = Counter(final_final_list)
         most_occur = counter.most_common(30)
 
         for i in most_occur:
@@ -521,6 +550,66 @@ def get_tweets_by_date(data, date=''):
     return tweet_display
 
 
-# method to delete irrelevant tweets
-def delete_tweet_from_database(keyword):
-    return []
+
+def clean_tweets_for_word_cloud(file='data/tweets_with_translations.csv'):
+    initial_list, final_list = [], []
+    if os.path.exists(file):
+        with open(file, newline='', encoding='utf8') as inputFile:
+            with open('data/for_word_cloud.csv', 'a', newline='', encoding='utf8') as outputFile:
+                reader = csv.DictReader(inputFile)
+                fieldnames = ['edit_history_tweet_ids', 'geo', 'created_at', 'text', 'neg',
+                              'neu', 'pos', 'compound', 'overall_sentiment', 'translation', 'cleaned_text']
+                writer = csv.DictWriter(outputFile, fieldnames=fieldnames)
+
+                if os.stat('data/for_word_cloud.csv').st_size == 0:
+                    writer.writeheader()
+
+                for tweet in reader:
+                    edit_history_tweet_ids = tweet['edit_history_tweet_ids']
+                    geo = tweet['geo']
+                    created_at = tweet['created_at']
+                    text = tweet['text']
+                    neg = tweet['neg']
+                    neu = tweet['neu']
+                    pos = tweet['pos']
+                    compound = tweet['compound']
+                    overall_sentiment = tweet['overall_sentiment']
+                    translation = tweet['translation']
+
+                    # for each tweet, clean tweet
+                    lemmatized_words = clean_text(text)
+                    # lemmatized_words is a list of words from the tweet
+                    eng_stopwords = stopwords.words('english')
+                    ind_stopwords = stopwords.words('indonesian')
+                    initial_list.clear()
+                    final_list.clear()
+                    for word in lemmatized_words:
+                        initial_list.append(word)
+                        # a list to check how many words initially without excluding stopwords
+                        if word not in eng_stopwords and word not in ind_stopwords and not word.isnumeric():
+                            final_list.append(word)
+                            # a list to check how many words after excluding stopwords and numbers
+                            # in both eng and indonesian (similar to malay)
+
+                    cleaned_text = final_list
+                    print(len(initial_list))
+                    print(initial_list)
+                    print(len(final_list))
+                    print(final_list)
+
+                    new_dict = dict(edit_history_tweet_ids=edit_history_tweet_ids,
+                                    geo=geo,
+                                    created_at=created_at,
+                                    text=text,
+                                    neg=neg,
+                                    neu=neu,
+                                    pos=pos,
+                                    compound=compound,
+                                    overall_sentiment=overall_sentiment,
+                                    translation=translation,
+                                    cleaned_text=cleaned_text)
+                    writer.writerow(new_dict)
+                    print(edit_history_tweet_ids)
+                    print('row written successfully')
+    else:
+        print('{file} does not exist')
