@@ -31,7 +31,7 @@ function App() {
     // making sure fetching from correct URL in production
     //ref: https://stackoverflow.com/questions/45847813/react-native-fetch-api-url-in-development-and-productive-mode
 
-    const baseURL = process.env.NODE_ENV === 'development' ? '' : 'https://fbba-5-151-25-3.eu.ngrok.io'
+    const baseURL = process.env.NODE_ENV === 'development' ? '' : 'https://e191-5-151-25-3.eu.ngrok.io'
     const origin = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://twitter-viz-fyp.vercel.app/'
     const mode = process.env.NODE_ENV === 'development' ? "same-origin" : "cors"
 
