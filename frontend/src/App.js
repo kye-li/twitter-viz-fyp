@@ -136,8 +136,13 @@ function App() {
                 setTweetDisplayText(data)
             }
             else {
-                alert(data + " on this date: " + date);
-                setTweetDisplayText(data + " on this date: " + date)
+                if (keyword !== '') {
+                    alert(data + " " + date + " for keyword: " + keyword);
+                    setTweetDisplayText(data + " " + date + " for keyword: " + keyword);
+                } else {
+                    alert(data + " " + date);
+                    setTweetDisplayText(data + " " + date);
+                }
             }
             setSentimentTweets({})
         }
