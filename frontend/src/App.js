@@ -36,7 +36,7 @@ function App() {
     const mode = process.env.NODE_ENV === 'development' ? "cors" : "cors"
 
     const showAllTweets = async () => {
-        const response = await fetch(
+        await fetch(
             `${baseURL}/show-all-tweets`, {
                 mode: mode,
                 credentials: "include",
@@ -45,22 +45,25 @@ function App() {
                     "ngrok-skip-browser-warning": "69420",
                     "Origin": origin
                 })
+            }).then((response) => {
+                if (!response.ok) {
+                    console.log(`Something is wrong...: ${response.status}`);
+            }
+
+            return response.json();
+
+        })
+            .then((response) => {
+                setTweetDisplayText("Now showing all tweets in database.");
+                setSentimentTweets(response);
+                console.log(response);
             });
 
-        const data = await response.json();
-
-        if (!response.ok) {
-            console.log("something messed up");
-        } else {
-            setTweetDisplayText("Now showing all tweets in database.");
-            setSentimentTweets(data);
-            console.log(data)
-        }
     };
 
 
     const updatePieChartByKeyword = async ({keyword}) => {
-        const response = await fetch(
+        await fetch(
             `${baseURL}/pie-chart?` +
             new URLSearchParams({
                 keyword: keyword,
@@ -72,45 +75,44 @@ function App() {
                     "ngrok-skip-browser-warning": "69420",
                     "Origin": origin
                 })
+            }).then((response) => {
+            if (!response.ok) {
+                console.log(`Something is wrong...: ${response.status}`);
+            }
+            return response.json();
+        })
+            .then((response) => {
+                setPieChartData(response);
+                console.log(response)
+                let total, pos, neu, neg, posPer, neuPer, negPer, stats;
+                total = response[0] + response[1] + response[2];
+                pos = response[0];
+                neu = response[1];
+                neg = response[2];
+
+                posPer = Math.round((pos / total) * 100)
+                neuPer = Math.round((neu / total) * 100)
+                negPer = Math.round((neg / total) * 100)
+
+                stats = "Now showing Pie Chart for keyword: " + keyword + " -> Total tweets: " + String(total) + " | " + "\n"
+                    + "Positive: " + String(pos) + ", " + String(posPer) + "%" + " | " + "\n"
+                    + "Neutral: " + String(neu) + ", " + String(neuPer) + "%" + " | " + "\n"
+                    + "Negative: " + String(neg) + ", " + String(negPer) + "%";
+
+                setPieChartStats(stats)
             });
-
-        const data = await response.json();
-
-
-        if (!response.ok) {
-            console.log("something messed up");
-        } else {
-            setPieChartData(data);
-            console.log(data)
-            let total, pos, neu, neg, posPer, neuPer, negPer, stats;
-            total = data[0] + data[1] + data[2];
-            pos = data[0];
-            neu = data[1];
-            neg = data[2];
-
-            posPer = Math.round((pos/total)*100)
-            neuPer = Math.round((neu/total)*100)
-            negPer = Math.round((neg/total)*100)
-
-            stats = "Now showing Pie Chart for keyword: "+ keyword + " -> Total tweets: " + String(total) + " | " + "\n"
-                + "Positive: " + String(pos) + ", " + String(posPer) + "%" + " | " + "\n"
-                + "Neutral: " + String(neu) + ", " + String(neuPer) + "%" + " | " + "\n"
-                + "Negative: " + String(neg) + ", " + String(negPer) + "%";
-
-            setPieChartStats(stats)
-        }
     };
 
 
     const getTweetsWithSentiment = async (keyword, sentiment, date) => {
 
-        if(date !== null){
+        if (date !== null) {
             date = date.toISOString().split('T')[0];
         } else {
             date = '';
         }
 
-        const response = await fetch(
+        await fetch(
             `${baseURL}/show-tweets-by-sentiment?` +
             new URLSearchParams({
                 keyword: keyword,
@@ -124,37 +126,38 @@ function App() {
                     "ngrok-skip-browser-warning": "69420",
                     "Origin": origin
                 })
-            });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            console.log("something messed up");
-        } else if (data.length === 1) {
-            if(date === '') {
-                alert(data);
-                setTweetDisplayText(data)
+            }).then((response) => {
+            if (!response.ok) {
+                console.log(`Something is wrong...: ${response.status}`);
             }
-            else {
-                if (keyword !== '') {
-                    alert(data + " " + date + " for keyword: " + keyword);
-                    setTweetDisplayText(data + " " + date + " for keyword: " + keyword);
+            return response.json();
+        })
+            .then((response) => {
+                if (response.length === 1) {
+                    if (date === '') {
+                        alert(response);
+                        setTweetDisplayText(response)
+                    } else {
+                        if (keyword !== '') {
+                            alert(response + " " + date + " for keyword: " + keyword);
+                            setTweetDisplayText(response + " " + date + " for keyword: " + keyword);
+                        } else {
+                            alert(response + " " + date);
+                            setTweetDisplayText(response + " " + date);
+                        }
+                    }
+                    setSentimentTweets({})
                 } else {
-                    alert(data + " " + date);
-                    setTweetDisplayText(data + " " + date);
+                    setTweetDisplayText("Now showing " + sentiment + " tweets with keyword: " + keyword + ", on date: " + date)
+                    setSentimentTweets(response);
+                    console.log(response)
                 }
-            }
-            setSentimentTweets({})
-        }
-        else {
-            setTweetDisplayText("Now showing " + sentiment + " tweets with keyword: " + keyword + ", on date: " + date)
-            setSentimentTweets(data);
-            console.log(data)
-        }
+            });
     };
 
+
     const getTweetsByKeyword = async ({keyword}) => {
-        const response = await fetch(
+        await fetch(
             `${baseURL}/show-tweets-by-keyword?` +
             new URLSearchParams({
                 keyword: keyword,
@@ -166,33 +169,34 @@ function App() {
                     "ngrok-skip-browser-warning": "69420",
                     "Origin": origin
                 })
+            }).then((response) => {
+            if (!response.ok) {
+                console.log(`Something is wrong...: ${response.status}`);
+            }
+            return response.json();
+        })
+            .then((response) => {
+                if (typeof response === "string") {
+                    alert(response);
+                    setTweetDisplayText(response)
+                    setSentimentTweets({})
+                    setSearchText("Dashboard is empty as there is no match for tweets containing keyword. " +
+                        "Please enter a different keyword.")
+                    setLineChartStats("No match for tweets containing keyword. " +
+                        "Please enter a different keyword.")
+                    setTopTenWords("No match for tweets containing keyword. " +
+                        "Please enter a different keyword.")
+                } else {
+                    setTweetDisplayText("Now showing tweets with the keyword: " + keyword)
+                    setSentimentTweets(response);
+                    console.log(response)
+                }
             });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            console.log("something messed up");
-        } else if (typeof data === "string") {
-            alert(data);
-            setTweetDisplayText(data)
-            setSentimentTweets({})
-            setSearchText("Dashboard is empty as there is no match for tweets containing keyword. " +
-                "Please enter a different keyword.")
-            setLineChartStats("No match for tweets containing keyword. " +
-            "Please enter a different keyword.")
-            setTopTenWords("No match for tweets containing keyword. " +
-                "Please enter a different keyword.")
-        }
-        else {
-            setTweetDisplayText("Now showing tweets with the keyword: " + keyword)
-            setSentimentTweets(data);
-            console.log(data)
-        }
-
     };
 
+
     const updateWordCloud = async (keyword, sentiment) => {
-        const response = await fetch(
+        await fetch(
             `${baseURL}/word-cloud?` +
             new URLSearchParams({
                 keyword: keyword,
@@ -205,38 +209,38 @@ function App() {
                     "ngrok-skip-browser-warning": "69420",
                     "Origin": origin
                 })
-            });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            console.log("something messed up");
-        } else {
-            setWordCloudData(data)
-            console.log(data)
-            if (data.length > 0) {
-                let word;
-                let size;
-                let topTenString = '';
-                for (let i = 0; i < 10; i++) {
-                    word = data[i].text;
-                    size = data[i].value;
-                    topTenString += word + " (" + size + " times)" + ", ";
-                }
-                if (keyword === '') {
-                    setTopTenWords("Top 10 words for " + sentiment + " tweets in the database " +
-                        "are: " + "\n" + topTenString + ".");
-                } else {
-                    setTopTenWords("Top 10 words for " + sentiment + " tweets with the keyword: "
-                        + keyword + " are: " + "\n" + topTenString + ".");
-                }
+            }).then((response) => {
+            if (!response.ok) {
+                console.log(`Something is wrong...: ${response.status}`);
             }
-        }
+            return response.json();
+        })
+            .then((response) => {
+                setWordCloudData(response)
+                console.log(response)
+                if (response.length > 0) {
+                    let word;
+                    let size;
+                    let topTenString = '';
+                    for (let i = 0; i < 10; i++) {
+                        word = response[i].text;
+                        size = response[i].value;
+                        topTenString += word + " (" + size + " times)" + ", ";
+                    }
+                    if (keyword === '') {
+                        setTopTenWords("Top 10 words for " + sentiment + " tweets in the database " +
+                            "are: " + "\n" + topTenString + ".");
+                    } else {
+                        setTopTenWords("Top 10 words for " + sentiment + " tweets with the keyword: "
+                            + keyword + " are: " + "\n" + topTenString + ".");
+                    }
+                }
+            });
     };
 
 
     const updateLineChart = async (keyword, sentiment) => {
-        const response = await fetch(
+        await fetch(
             `${baseURL}/line-chart?` +
             new URLSearchParams({
                 keyword: keyword,
@@ -249,23 +253,24 @@ function App() {
                     "ngrok-skip-browser-warning": "69420",
                     "Origin": origin
                 })
-            });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            console.log("something messed up");
-        } else {
-            setLineChartData(data);
-            console.log(data)
-            if (keyword === '') {
-                setLineChartStats("Tweet counts by date for " + sentiment + " tweets in the database.");
-            } else {
-                setLineChartStats("Tweet counts by date for " + sentiment + " tweets with the keyword: "
-                    + keyword + ".");
+            }).then((response) => {
+            if (!response.ok) {
+                console.log(`Something is wrong...: ${response.status}`);
             }
-        }
+            return response.json();
+        })
+            .then((response) => {
+                setLineChartData(response);
+                    console.log(response)
+                    if (keyword === '') {
+                        setLineChartStats("Tweet counts by date for " + sentiment + " tweets in the database.");
+                    } else {
+                        setLineChartStats("Tweet counts by date for " + sentiment + " tweets with the keyword: "
+                            + keyword + ".");
+                    }
+                });
     };
+
 
     const enterSearch = (e) => {
         e.preventDefault();
@@ -291,14 +296,14 @@ function App() {
             setLineChartData([]);
             setTopTenWords("Loading word cloud and top ten words...");
             setWordCloudData([]);
-            updatePieChartByKeyword({keyword: `${searchInput}`});
-            console.log("enterSearch: updatepiechartbykeyword")
-            updateLineChart(searchInput, 'all');
-            console.log("enterSearch: updatelinechart")
-            getTweetsByKeyword({keyword: `${searchInput}`});
-            console.log("enterSearch: gettweetsbykeyword")
-            updateWordCloud(searchInput,'all');
-            console.log("enterSearch: updatewordcloud")
+            updatePieChartByKeyword({keyword: `${searchInput}`}).catch(console.error)
+            console.log("enterSearch: update-pie-chart-by-keyword")
+            updateLineChart(searchInput, 'all').catch(console.error);
+            console.log("enterSearch: update-line-chart")
+            getTweetsByKeyword({keyword: `${searchInput}`}).catch(console.error);
+            console.log("enterSearch: get-tweets-by-keyword")
+            updateWordCloud(searchInput,'all').catch(console.error);
+            console.log("enterSearch: update-word-cloud")
         }
     };
 
@@ -309,12 +314,12 @@ function App() {
         setLineChartData([]);
         setTopTenWords("Loading word cloud and top ten words display...");
         setWordCloudData([]);
-        updateLineChart(keyword, sentiment)
-        console.log("sentimentButton: updatelinechart")
-        getTweetsWithSentiment(keyword, sentiment, date);
-        console.log("sentimentButton: gettweetswithsentiment")
-        updateWordCloud(keyword, sentiment);
-        console.log("sentimentButton: updatewordcloud")
+        updateLineChart(keyword, sentiment).catch(console.error);
+        console.log("sentimentButton: update-line-chart")
+        getTweetsWithSentiment(keyword, sentiment, date).catch(console.error);
+        console.log("sentimentButton: get-tweets-with-sentiment")
+        updateWordCloud(keyword, sentiment).catch(console.error);
+        console.log("sentimentButton: update-word-cloud")
     };
 
     const resetButton = () => {
@@ -329,25 +334,25 @@ function App() {
         setLineChartData([]);
         setTopTenWords("Loading word cloud and top ten words...");
         setWordCloudData([]);
-        updatePieChartByKeyword({keyword: ''});
-        console.log("reset: piechartupdate")
-        updateLineChart('', 'all');
-        console.log("reset: linechartupdate")
-        updateWordCloud('','all');
-        console.log("reset: wordcloudupdate")
-        showAllTweets();
-        console.log("reset: showalltweets")
+        updatePieChartByKeyword({keyword: ''}).catch(console.error);
+        console.log("reset: pie-chart-update")
+        updateLineChart('', 'all').catch(console.error);
+        console.log("reset: line-chart-update")
+        updateWordCloud('','all').catch(console.error);
+        console.log("reset: word-cloud-update")
+        showAllTweets().catch(console.error);
+        console.log("reset: show-all-tweets")
     };
 
     useEffect(() => {
-        updatePieChartByKeyword({keyword: ''});
-        console.log("useEffect: piechartupdate")
-        updateLineChart('', 'all');
-        console.log("useEffect: linechartupdate")
-        updateWordCloud('','all');
-        console.log("useEffect: wordcloudupdate")
-        showAllTweets();
-        console.log("useEffect: showalltweets")
+        updatePieChartByKeyword({keyword: ''}).catch(console.error);
+        console.log("useEffect: pie-chart-update")
+        updateLineChart('', 'all').catch(console.error);
+        console.log("useEffect: line-chart-update")
+        updateWordCloud('','all').catch(console.error);
+        console.log("useEffect: word-cloud-update")
+        showAllTweets().catch(console.error);
+        console.log("useEffect: show-all-tweets")
     }, []);
 
         return (
