@@ -33,7 +33,7 @@ function App() {
 
     const baseURL = process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:5049' : process.env.REACT_APP_NGROK_BASE_URL
     const origin = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://twitter-viz-fyp.vercel.app/'
-    const mode = process.env.NODE_ENV === 'development' ? "same-origin" : "cors"
+    const mode = process.env.NODE_ENV === 'development' ? "cors" : "cors"
 
     const showAllTweets = async () => {
         const response = await fetch(
