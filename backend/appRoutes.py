@@ -3,13 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import updateDashboard
 
-# TODO: error handling
+# https://fastapi.tiangolo.com/tutorial/first-steps/
 
-# ref: https://fastapi.tiangolo.com/tutorial/cors/
+app = FastAPI()  # this line of code was taken from the FastAPI tutorial linked above
 
-app = FastAPI()
+# origins and app.add_middleware() code below taken from reference https://fastapi.tiangolo.com/tutorial/cors/
 
-origins = [
+origins = [  
     "http://127.0.0.1:5049",
     "http://127.0.0.1:5049/",
     "http://localhost:3000",
@@ -29,6 +29,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# https://fastapi.tiangolo.com/tutorial/first-steps/
+# the app.get() methods were written while learning from the tutorial linked above
 
 @app.get("/show-all-tweets")
 async def show_all_tweets(file='data/tweets_with_translations.csv'):
@@ -71,6 +73,9 @@ async def show_line_chart(keyword='', sentiment='all'):
     response = updateDashboard.line_chart_input(str(keyword), str(sentiment))
     return response
 
+# https://www.uvicorn.org/#uvicornrun
+# https://www.tutorialspoint.com/fastapi/fastapi_uvicorn.htm
+# the code below was taken from the tutorials mentioned above 
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=5049)
