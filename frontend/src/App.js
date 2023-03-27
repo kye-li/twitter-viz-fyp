@@ -2,7 +2,7 @@ import * as React from "react";
 import {useState, useEffect} from "react";
 import {Button, ChakraProvider, Container, Text} from "@chakra-ui/react";
 // import {ArcElement, Chart as ChartJS, Legend, Tooltip} from 'chart.js';
-import './App.css';
+// import './App.css';
 import PieChart from "./components/PieChart";
 import { SimpleGrid } from '@chakra-ui/react'
 // ref: https://chakra-ui.com/docs/components/simple-grid/usage
