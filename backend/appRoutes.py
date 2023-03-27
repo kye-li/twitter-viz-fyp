@@ -32,6 +32,7 @@ app.add_middleware(
 # https://fastapi.tiangolo.com/tutorial/first-steps/
 # the app.get() methods were written while learning from the tutorial linked above
 
+
 @app.get("/show-all-tweets")
 async def show_all_tweets(file='data/tweets_with_translations.csv'):
     response = updateDashboard.show_all_tweets(file)
@@ -47,12 +48,6 @@ async def show_tweets_by_sentiment(keyword='', sentiment='all', date=''):
 @app.get("/show-tweets-by-keyword")
 async def show_tweets_by_keyword(keyword):
     response = updateDashboard.show_tweets_by_keyword(str(keyword))
-    return response
-
-
-@app.get("/show-tweets-by-date")
-async def show_tweets_by_date(date):
-    response = updateDashboard.get_tweets_by_date(str(date))
     return response
 
 
