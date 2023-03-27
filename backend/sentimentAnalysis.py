@@ -13,8 +13,8 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from googletrans import Translator
 import pandas as pd
 
-analyser = SentimentIntensityAnalyzer()
-translator = Translator()
+analyser = SentimentIntensityAnalyzer()     # this line of code taken from reference
+translator = Translator()     # this line of code taken from reference
 
 positive_list, negative_list, neutral_list = [], [], []
 
@@ -31,12 +31,12 @@ def update_tweets_with_sentiment(file):
     if os.path.exists(file):
         with open(file, newline='', encoding='utf8') as inputFile:
             with open('data/scored_tweets.csv', 'a', newline='', encoding='utf8') as outputFile:
-                reader = csv.DictReader(inputFile)
-                fieldnames = ['edit_history_tweet_ids', 'geo', 'created_at', 'text', 'neg',
+                reader = csv.DictReader(inputFile)     # this line of code taken from reference
+                fieldnames = ['edit_history_tweet_ids', 'geo', 'created_at', 'text', 'neg',      # this line of code taken from reference
                               'neu', 'pos', 'compound', 'overall_sentiment']
-                writer = csv.DictWriter(outputFile, fieldnames=fieldnames)
+                writer = csv.DictWriter(outputFile, fieldnames=fieldnames)     
 
-                if os.stat('data/scored_tweets.csv').st_size == 0:
+                if os.stat('data/scored_tweets.csv').st_size == 0:     
                     writer.writeheader()
 
                 for tweet in reader:
@@ -53,9 +53,9 @@ def update_tweets_with_sentiment(file):
                     # this below is one request.....
                     # more than 11k requests to be done
 
-                    translated_text = translator.translate(text).text
+                    translated_text = translator.translate(text).text     # this line of code taken from reference
                     # print(translated_text)
-                    text_scores = analyse_text(translated_text)
+                    text_scores = analyse_text(translated_text)     
                     neg = text_scores['neg']
                     neu = text_scores['neu']
                     pos = text_scores['pos']
@@ -99,7 +99,7 @@ def update_tweets_with_sentiment(file):
 # either run through translator or add malay words in lexicon.txt
 
 def analyse_text(tweet):
-    sentiment_score_dict = analyser.polarity_scores(tweet)
+    sentiment_score_dict = analyser.polarity_scores(tweet)     # this line of code taken from reference
     # method returns a dict with scores in float
     # positive_score = sentiment_score_dict['pos']
     # neutral_score = sentiment_score_dict['neu']
@@ -125,7 +125,7 @@ def get_counts_before_trans(file):
     df1 = pd.read_csv(file)
     total = len(df1["text"])
     print('Tweet counts before translation:')
-    print(df1['overall_sentiment'].value_counts(), 'total tweets:', total)
+    print(df1['overall_sentiment'].value_counts(), 'total tweets:', total)     # this line of code taken from reference
     print('')
 
 
@@ -133,7 +133,7 @@ def get_counts_after_trans(file):
     df2 = pd.read_csv(file)
     total = len(df2["text"])
     print('Tweet counts after translation:')
-    print(df2['overall_sentiment'].value_counts(), 'total tweets:', total)
+    print(df2['overall_sentiment'].value_counts(), 'total tweets:', total)    # this line of code taken from reference
 
 
 # method to remove https links
