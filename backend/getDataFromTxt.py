@@ -1,7 +1,3 @@
-# ref: https://www.w3schools.com/python
-# ref: https://docs.python.org/3/library/os.html
-# ref: https://docs.python.org/3/library/csv.html
-
 import json
 import csv
 import os
@@ -17,6 +13,9 @@ directory2 = r"C:\Users\kye\Documents\Twitter FYP\post election tweets"
 directory3 = r"C:\Users\kye\Documents\Twitter FYP\extra pre-election tweets"
 
 
+# ref: https://docs.python.org/3/library/csv.html
+# the open() and DictWriter methods used in code below were written while learning from the Python documentation as referenced
+
 def write_to_csv(data):
     # use 'a' to continue appending rows to original file, 'w' will clear file
     # check first if file is empty, if it is, write header
@@ -26,7 +25,7 @@ def write_to_csv(data):
 
         # check if file is empty, write header
         # reference: https://thispointer.com/python-three-ways-to-check-if-a-file-is-empty/
-        if os.stat('data/tweets.csv').st_size == 0:
+        if os.stat('data/tweets.csv').st_size == 0: # this line of code taken from reference
             writer.writeheader()
             print('file is empty')
         for tweet in data:
@@ -38,6 +37,8 @@ def write_to_csv(data):
                 tweet['geo'] = ''
                 writer.writerow(tweet)
 
+# ref: https://docs.python.org/3/library/os.html
+# the os.listdir() method used in code below was written while learning from the Python documentation as referenced
 
 def read_files(directory):
     # take in the directory path
