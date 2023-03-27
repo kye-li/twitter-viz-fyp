@@ -1,7 +1,5 @@
-// ref: https://www.npmjs.com/package/react-minimal-pie-chart?activeTab=readme
-// ref: https://react-chartjs-2.js.org/examples/pie-chart
+// all code below were written while learning and referring to documentation: https://react-chartjs-2.js.org/examples/pie-chart
 
-// import { PieChart } from "react-minimal-pie-chart";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 
