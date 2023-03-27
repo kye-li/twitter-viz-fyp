@@ -29,11 +29,13 @@ function App() {
     const [startDate, setStartDate] = useState(null);
 
     // making sure fetching from correct URL in production
-    //ref: https://stackoverflow.com/questions/45847813/react-native-fetch-api-url-in-development-and-productive-mode
+    // line 34, 35, 36 taken from ref: https://stackoverflow.com/questions/45847813/react-native-fetch-api-url-in-development-and-productive-mode
 
-    const baseURL = process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:5049' : process.env.REACT_APP_NGROK_BASE_URL
+    const baseURL = process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:5049' : process.env.REACT_APP_NGROK_BASE_URL    
     const origin = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://twitter-viz-fyp.vercel.app/'
     const mode = process.env.NODE_ENV === 'development' ? "cors" : "cors"
+    
+    // all fetch methods below were written while learning from and referring to the fetch documentation https://developer.mozilla.org/en-US/docs/Web/API/fetch
 
     const showAllTweets = async () => {
         await fetch(
@@ -107,7 +109,7 @@ function App() {
     const getTweetsWithSentiment = async (keyword, sentiment, date) => {
 
         if (date !== null) {
-            date = date.toISOString().split('T')[0];
+            date = date.toISOString().split('T')[0];       // this line of code was taken from https://stackoverflow.com/questions/34053715/how-to-output-date-in-javascript-in-iso-8601-without-milliseconds-and-with-z
         } else {
             date = '';
         }
