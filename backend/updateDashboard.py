@@ -100,7 +100,7 @@ def show_tweets_by_keyword(keyword):
 
     for tweet in data1:
         text = str.lower(tweet["text"])
-        x = re.findall(keyword, text)
+        x = re.findall(keyword, text)   # this line of code taken from ref: https://www.w3schools.com/python/python_regex.asp#findall
         # if x is not an empty list, meaning there's a match, append tweet to tweet_list
         if x:
             tweet_list.append(tweet)
@@ -135,7 +135,7 @@ def wc_show_tweets_by_keyword(keyword):
 
     for tweet in data1:
         text = str.lower(tweet["text"])
-        x = re.findall(keyword, text)
+        x = re.findall(keyword, text)   # this line of code taken from ref: https://www.w3schools.com/python/python_regex.asp#findall
         # if x is not an empty list, meaning there's a match, append tweet to tweet_list
         if x:
             tweet_list.append(tweet)
@@ -156,17 +156,6 @@ def wc_show_tweets_by_keyword(keyword):
     # print(response)
     # print(len(response))
     return response
-
-
-
-# method to remove brackets and single quotes from string ['1593771032036286465']
-# to obtain tweet id: 1593771032036286465
-
-def get_tweet_id(tweet):
-    id_string = tweet['edit_history_tweet_ids']
-    tweet_id = re.sub("[\[\]']", "", id_string)
-
-    return tweet_id
 
 
 def pie_chart_data(keyword=''):
@@ -559,7 +548,7 @@ def clean_tweets_for_word_cloud(file='data/tweets_with_translations.csv'):
                               'neu', 'pos', 'compound', 'overall_sentiment', 'translation', 'cleaned_text']
                 writer = csv.DictWriter(outputFile, fieldnames=fieldnames)
 
-                if os.stat('data/for_word_cloud.csv').st_size == 0:
+                if os.stat('data/for_word_cloud.csv').st_size == 0:    # this line of code taken from ref: https://thispointer.com/python-three-ways-to-check-if-a-file-is-empty/
                     writer.writeheader()
 
                 for tweet in reader:
