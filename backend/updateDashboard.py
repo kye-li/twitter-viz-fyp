@@ -11,16 +11,16 @@ from collections import Counter
 import datetime
 import pandas as pd
 
-nltk.download('punkt')
+nltk.download('punkt')  # these lines of download codes taken from ref: https://www.datacamp.com/tutorial/stemming-lemmatization-python
 nltk.download("wordnet")
 nltk.download("omw-1.4")
 nltk.download('stopwords')
 
-# ps = PorterStemmer()
+# ps = PorterStemmer()  # https://www.geeksforgeeks.org/python-stemming-words-with-nltk/
 
-wnl = WordNetLemmatizer()
-factory = StemmerFactory()
-stemmer = factory.create_stemmer()
+wnl = WordNetLemmatizer()   # this line of code taken from https://www.geeksforgeeks.org/python-lemmatization-with-nltk/
+factory = StemmerFactory()  # this line of code taken from https://pypi.org/project/Sastrawi/
+stemmer = factory.create_stemmer()  # this line of code taken from https://pypi.org/project/Sastrawi/
 
 a_pos_list, a_neg_list, a_neu_list = [], [], []
 k_pos_list, k_neg_list, k_neu_list = [], [], []
@@ -349,13 +349,13 @@ def show_word_frequency(keyword='', sentiment='all'):
             # ref: https://www.geeksforgeeks.org/python-convert-a-string-representation-of-list-into-list/
 
             list_of_words = str(tweet["cleaned_text"])
-            words1 = list_of_words.strip('][')
-            words = re.sub("[']", "", words1).split(', ')
+            words1 = list_of_words.strip('][')   # this line of code taken from ref above
+            words = re.sub("[']", "", words1).split(', ')   # this line of code taken from ref above
             for word in words:
                 final_final_list.append(word)
 
-        counter = Counter(final_final_list)
-        most_occur = counter.most_common(30)
+        counter = Counter(final_final_list)   # this line of code taken from the tutorial https://www.geeksforgeeks.org/find-k-frequent-words-data-set-python/
+        most_occur = counter.most_common(30) # this line of code taken from the tutorial https://www.geeksforgeeks.org/find-k-frequent-words-data-set-python/
 
         for i in most_occur:
             word_and_size = {"text": i[0], "value": i[1]}
@@ -374,19 +374,17 @@ def clean_text(text):
     # remove all special characters (everything except alphabets and digits)
     cleaned_text2 = re.sub("[^a-zA-Z0-9]", " ", cleaned_text1)
     # tokenize string after making them all lowercase
-    cleaned_text3 = word_tokenize(str.lower(cleaned_text2))
-    # stemming words ref: https://www.geeksforgeeks.org/python-stemming-words-with-nltk/
-    # lemmatiztion ref: https://www.datacamp.com/tutorial/stemming-lemmatization-python
+    cleaned_text3 = word_tokenize(str.lower(cleaned_text2))     # this line of code taken from the tutorial https://www.geeksforgeeks.org/removing-stop-words-nltk-python/
     # https://www.nltk.org/_modules/nltk/stem/wordnet.html
     for word in cleaned_text3:
         # english lemmatization
         # "v" as verbs - return lemma of all verbs
-        lemmatized_word = wnl.lemmatize(word, "v")
+        lemmatized_word = wnl.lemmatize(word, "v")   # this line of code taken from the tutorial https://www.geeksforgeeks.org/python-lemmatization-with-nltk/
         # indonesian (similar to malay) stemming and lemmatization
         # https://pypi.org/project/PySastrawi/
         # ref: https://malaya.readthedocs.io/en/latest/load-stemmer.html
         # print(word, " : ", stemmer.stem(word))
-        lemmatized_word = stemmer.stem(lemmatized_word)
+        lemmatized_word = stemmer.stem(lemmatized_word)   # this line of code taken from ref above
         list_of_words_per_tweet.append(lemmatized_word)
 
     # print(list_of_words_per_tweet)
@@ -488,10 +486,10 @@ def line_chart_input(keyword='', sentiment='all'):
         all_dicts.clear()
         for tweet in data1:
             created_at = tweet['created_at']
-            created_at1 = datetime.datetime.fromisoformat(created_at)
+            created_at1 = datetime.datetime.fromisoformat(created_at)   # this line taken from tutorial ref: https://www.geeksforgeeks.org/python-datetime-module/
             # print(created_at1)
-            date = str(created_at1.date())
-            time = created_at1.hour
+            date = str(created_at1.date())    # this line taken from tutorial ref: https://www.geeksforgeeks.org/python-datetime-module/
+            time = created_at1.hour    # this line taken from tutorial ref: https://www.geeksforgeeks.org/python-datetime-module/
             # print(date, time)
 
             current_dict = dict(tweet)
@@ -499,7 +497,7 @@ def line_chart_input(keyword='', sentiment='all'):
             all_dicts.append(current_dict)
 
         df = pd.DataFrame(all_dicts)
-        date_df = df.groupby(['date'], group_keys=True)['text'].count()
+        date_df = df.groupby(['date'], group_keys=True)['text'].count()     # this line of code taken from tutorial https://www.geeksforgeeks.org/pandas-groupby-count-the-occurrences-of-each-combination/
         list_date_tweet_count = {'Date': date_df.keys().tolist(),
                                  'Tweet count': date_df.values.tolist()}
         # datetime_df = df.groupby(['date', 'time'])['text'].count()
@@ -526,8 +524,8 @@ def get_tweets_by_date(data, date=''):
 
     for tweet in data1:
         tweet_datetime = tweet['created_at']
-        tweet_datetime1 = datetime.datetime.fromisoformat(tweet_datetime)
-        tweet_date = str(tweet_datetime1.date())
+        tweet_datetime1 = datetime.datetime.fromisoformat(tweet_datetime)   # this line taken from tutorial ref: https://www.geeksforgeeks.org/python-datetime-module/
+        tweet_date = str(tweet_datetime1.date())   # this line taken from tutorial ref: https://www.geeksforgeeks.org/python-datetime-module/
         if date == tweet_date:
             tweet_with_date.append(tweet)
 
