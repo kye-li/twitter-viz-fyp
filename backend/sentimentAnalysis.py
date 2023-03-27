@@ -36,7 +36,7 @@ def update_tweets_with_sentiment(file):
                               'neu', 'pos', 'compound', 'overall_sentiment']
                 writer = csv.DictWriter(outputFile, fieldnames=fieldnames)     
 
-                if os.stat('data/scored_tweets.csv').st_size == 0:     
+                if os.stat('data/scored_tweets.csv').st_size == 0:     # this line of code taken from ref: reference: https://thispointer.com/python-three-ways-to-check-if-a-file-is-empty/
                     writer.writeheader()
 
                 for tweet in reader:
@@ -155,7 +155,7 @@ def add_translations_to_data(file):
                               'neu', 'pos', 'compound', 'overall_sentiment', 'translation']
                 writer = csv.DictWriter(outputFile, fieldnames=fieldnames)
 
-                if os.stat('data/tweets_with_translations.csv').st_size == 0:
+                if os.stat('data/tweets_with_translations.csv').st_size == 0:     # this line of code taken from ref: reference: https://thispointer.com/python-three-ways-to-check-if-a-file-is-empty/
                     writer.writeheader()
 
                 for tweet in reader:
