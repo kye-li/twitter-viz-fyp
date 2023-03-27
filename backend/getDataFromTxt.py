@@ -37,6 +37,7 @@ def write_to_csv(data):
                 tweet['geo'] = ''
                 writer.writerow(tweet)   # this line of code taken from reference (csv.html link above)
 
+                
 # ref: https://docs.python.org/3/library/os.html
 # the os.listdir() method used in code below was written while learning from the Python documentation as referenced
 
