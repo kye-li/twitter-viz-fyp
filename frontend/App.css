@@ -1,0 +1,17 @@
+.Button{
+    display: inline-block;
+    text-align: center;
+    align-items: flex-start;
+    cursor: default;
+    box-sizing: border-box;
+    position: absolute; top: 0; right: 0;
+}
+
+/*ref: https://www.w3schools.com/cssref/css3_pr_overflow-y.php*/
+.tweetsDisplay {
+    overflow-y: scroll;
+}
+
+.child {
+    display: inline-block;
+}
