@@ -360,22 +360,23 @@ function App() {
         return (
             <ChakraProvider>
                 <Container minH="100vh" minW="100vw" overflow="hidden" backgroundColor="purple">
-                    <Text fontWeight="bold" textAlign="center" h="5vh" color="white" fontSize="large">
+                    <Text id="dashboard-title" fontWeight="bold" textAlign="center" h="5vh" color="white" fontSize="large">
                         Twitter Open Data Analyses and Visualisations: A closer look into sentiments during Malaysia's 15th General Election
                     </Text>
                     <SimpleGrid columns={2} spacing={"0vh"} h="95vh" padding={1}>
                         <Container bg="lavender" h="47vh" minW="100%" border="2px" overflow="scroll">
-                            <form onSubmit={enterSearch}>
-                                    <label><b>Enter your search word here: </b></label>
+                            <form id="search-bar" onSubmit={enterSearch}>
+                                    <label id="search-bar-label"><b>Enter your search word here: </b></label>
                                     <input
+                                        id="search-input-text"
                                         type="text"
                                         value={searchInput}
                                         onChange={(e) => setSearchInput(e.target.value)}
                                     />
                                     <input type="submit" />
                             </form>
-                            <Text fontSize={"medium"} border={"2px"}>{searchText}</Text>
-                            <Text fontWeight={"bold"} fontSize={"medium"} color={"brown"}>{pieChartStats}</Text>
+                            <Text id="after-search-display-text" fontSize={"medium"} border={"2px"}>{searchText}</Text>
+                            <Text id="pie-chart-text" fontWeight={"bold"} fontSize={"medium"} color={"brown"}>{pieChartStats}</Text>
                             <PieChart pieChartProp={pieChartData} />
                         </Container>
                         <Container
@@ -385,7 +386,8 @@ function App() {
                             minW="100%"
                             border="2px"
                         >
-                            <Button fontSize={"xs"}
+                            <Button id="positive-btn"
+                                    fontSize={"xs"}
                                     position={"sticky"}
                                     margin={"1"}
                                     borderColor={"black"}
@@ -394,7 +396,8 @@ function App() {
                             >
                                 Show Positive Only
                             </Button>
-                            <Button fontSize={"xs"}
+                            <Button id="negative-btn"
+                                    fontSize={"xs"}
                                     position={"sticky"}
                                     margin={"1"}
                                     borderColor={"black"}
@@ -403,7 +406,8 @@ function App() {
                             >
                                 Show Negative Only
                             </Button>
-                            <Button fontSize={"xs"}
+                            <Button id="neutral-btn"
+                                    fontSize={"xs"}
                                     position={"sticky"}
                                     margin={"1"}
                                     borderColor={"black"}
@@ -418,22 +422,25 @@ function App() {
                             {/*>*/}
                             {/*    Default Tweets*/}
                             {/*</Button>*/}
-                            <Text fontWeight="bold">View Tweets by Date:</Text>
+                            <Text id="date-picker-text" fontWeight="bold">View Tweets by Date:</Text>
                             <DatePicker
+                                id="date-picker"
                                 showIcon
                                 dateFormat="yyyy-MM-dd"
                                 selected={startDate}
                                 onChange={(date) => setStartDate(date)}
                                 isClearable
                             />
-                            <Button fontSize={"xs"}
+                            <Button id="all-sentiments-btn"
+                                    fontSize={"xs"}
                                     borderColor={"black"}
                                     border={"1px"}
                                     onClick={() => sentimentButton(searchInput,'all', startDate)}
                             >
                                 Show All Tweets By Date
                             </Button>
-                            <Button fontSize={"xs"}
+                            <Button id="reset-dashboard-btn"
+                                    fontSize={"xs"}
                                     position={"sticky"}
                                     margin={"1"}
                                     borderColor={"black"}
@@ -444,15 +451,15 @@ function App() {
                             >
                                 Reset Dashboard
                             </Button>
-                            <Text fontWeight="bold" color={"brown"}>{tweetDisplayText}</Text>
+                            <Text id="tweet-display-text" fontWeight="bold" color={"brown"}>{tweetDisplayText}</Text>
                             <TweetDisplay tweetDisplayProp={sentimentTweets} />
                         </Container>
                         <Container bg="lavender" h="47vh" minW="100%" border="2px" overflow="scroll">
-                            <Text fontWeight={"bold"} fontSize={"medium"} color={"brown"}>{lineChartStats}</Text>
+                            <Text id="line-chart-text" fontWeight={"bold"} fontSize={"medium"} color={"brown"}>{lineChartStats}</Text>
                             <LineChart lineChartProp={lineChartData}/>
                         </Container>
                         <Container bg="lavender" h="47vh" minW="100%" overflow="scroll" border="2px">
-                            <Text fontWeight={"bold"} color={"purple"} fontStyle={"italic"}>{topTenWords}</Text>
+                            <Text id="top-ten-words" fontWeight={"bold"} color={"purple"} fontStyle={"italic"}>{topTenWords}</Text>
                             <WordCloud wordCloudProp={wordCloudData}/>
                         </Container>
                     </SimpleGrid>
